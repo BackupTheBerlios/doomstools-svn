@@ -15,21 +15,14 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with liglogtool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// std.cpp for freewar in /u/ept2/ribas_j/freewar/src
-// 
-// Made by jonathan ribas
-// Login   <ribas_j@epita.fr>
-// 
-// Started on  Mon May  3 13:19:28 2004 jonathan ribas
-// Last update Wed Jun 30 16:04:39 2004 
-//
 
 #include "liblogtool.h"
 
+using namespace	std;
+
 c_log::c_log()
 {
-  init(NULL);
+  init("\0");
 }
 
 c_log::c_log(string file)
@@ -46,9 +39,9 @@ bool		c_log::init(string file)
 {
   FILE		*fd;
 
-  if (!file)
+  if (!file.size())
     file = LOG_FILE;
-  if((fd = fopen(s, "w")) == NULL)
+  if((fd = fopen(file.c_str(), "w")) == NULL)
     {
       cerr << file << " fopen failed" << endl;
       _fd_log = NULL;
@@ -76,13 +69,13 @@ void		c_log::set_out(short out)
 
 int		c_log::put(string s)
 {
-  if (fd_log)
+  if (_fd_log)
     {
-      fprintf(fd_log, "%s\n", s);
+      fprintf(_fd_log, "%s\n", s.c_str());
     }
   else
     printf("Warning: log is not initialised\n");
-  printf("%s\n", s);
+  printf("%s\n", s.c_str());
 //   if (C)
 //     throw s;
   return (1);

@@ -15,20 +15,12 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with liglogtool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-/*
-** prototypes.h for freewar in /u/ept2/huot_j/Freewar/src
-** 
-** Made by jonathan huot
-** Login   <huot_j@epita.fr>
-** 
-** Started on  Mon May 10 19:37:57 2004 jonathan huot
-** Last update Mon Jul 12 17:27:49 2004 
-*/
 
 #ifndef _LIBLOGTOOL_H_
 #define _LIBLOGTOOL_H_
 
 #include <iostream>
+#include <string>
 #include <stdio.h>
 
 #define LOG_STDERR (1)
@@ -56,10 +48,10 @@ class		c_log
 
  public:
   c_log();
-  c_log(string file);
+  c_log(std::string file);
   ~c_log();
-  bool		init(string file);
-  void		put(string s);
+  bool		init(std::string file);
+  int		put(std::string s);
   void		close();
   void		set_out(short out);
 };
