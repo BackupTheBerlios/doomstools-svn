@@ -19,6 +19,10 @@
 #ifndef _LIBSTDTOOL_H_
 #define _LIBSTDTOOL_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -34,5 +38,8 @@ void	*xrealloc(void *ptr, size_t len);
 char	*xstrndup(char *s, size_t len);
 int	xstrlen(char *s);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif
