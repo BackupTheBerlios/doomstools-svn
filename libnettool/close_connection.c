@@ -60,7 +60,7 @@ void		close_client_connection(t_client *client)
     return;
   close_socket(&client->sock);
   cnt->newclient = del_in_list(cnt->newclient, client);
-  cnt->newclient = del_in_list(cnt->deadclient, client);
+  cnt->deadclient = del_in_list(cnt->deadclient, client);
   for (i = 0; cnt->clients[i]; i++)
     if (cnt->clients[i] == client)
       move_last_client(i);

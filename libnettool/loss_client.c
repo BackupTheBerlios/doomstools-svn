@@ -47,3 +47,10 @@ int		loss_client(t_client *c)
   move_last_client(i);
   return (1);
 }
+
+void		loss_tmp_client(t_client *c)
+{
+  close_socket(&c->sock);
+  cnt->newclient = del_in_list(cnt->newclient, c);
+  put_in_tmp_client(&cnt->deadclient, c);
+}

@@ -57,13 +57,6 @@ SOCKET			fill_fd(fd_set *maskr, fd_set *maskw)
       if (TAG_SEND(cnt->clients[n]) >= 0)
 	FD_SET(cnt->clients[n]->sock->channel, maskw);
     }
-  for (list = cnt->deadclient; list; list = list->next)
-    {
-      if (list->c->sock->channel > maxfd)
-	maxfd = list->c->sock->channel;
-      if (TAG_SEND(list->c) >= 0)
-	FD_SET(list->c->sock->channel, maskw);
-    }
   return (maxfd);
 }
 
@@ -92,6 +85,7 @@ int			check_select(Uint32 timeout)
     done += 2;
   if (retval > 0 && check_server(&maskr, &maskw, &retval))
     done += 8;
+  check_dead();
 #ifdef NETWORK_DEBUG
   if (retval)
     {

@@ -187,7 +187,7 @@ int		put_msg(t_client *client)
   if (result <= 0)
     {
       NETDEBUG(SDLNet_GetError());
-      client->loss = STATE_DROP;
+      client->state = STATE_DROP;
       fprintf(stderr, "STATE_FAIL_RECV ! (%d, %s)\n", result, strerror(errno));
       // met dans list deadclient, avec un etat 'drop'
       return (0);

@@ -17,12 +17,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "libnettool.h"
 
-void		authorize_client(t_client *c)
+void		close_socket(t_socket *sock)
 {
-  if (!c->state)
-    {
-      c->authorized = 1;
-      insert_client(c);
-      cnt->newclient = del_in_list(cnt->newclient, c);
-    }
+  if (*sock)
+    SDLNet_TCP_Close(*sock);
+  *sock = NULL;
 }

@@ -19,6 +19,7 @@
 
 void		delete_client(t_client *c)
 {
+  close_socket(&c->sock);
   cnt->allclients = del_in_list(cnt->allclients, c);
   free_client_data(c);
   _net_xfree(c);

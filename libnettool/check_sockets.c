@@ -41,10 +41,25 @@ int		manage_client(t_client *client, fd_set *maskr, fd_set *maskw,
       (*res)--;
       if (get_msg(client))
 	return (1);
-      if (client->loss)
+      if (client->state)
 	return (-1);
     }
   return (0);
+}
+
+void		check_dead()
+{
+  t_tmp		*list;
+  t_tmp		*next;
+
+  for (list = cnt->deadclient; list; list = next)
+    {
+      next = list->next;
+      call_deadhandler(list->c, NULL);
+      delete_client(list->c);
+      _net_xfree(list);
+    }
+  cnt->deadclient = NULL;
 }
 
 int		check_tmp(t_tmp **newclt, fd_set *maskr, fd_set *maskw,
@@ -60,12 +75,7 @@ int		check_tmp(t_tmp **newclt, fd_set *maskr, fd_set *maskw,
     {
       next = list->next;
       if ((ret = manage_client(list->c, maskr, maskw, res)) < 0)
-	{
-	  close_socket(&list->c->sock);
-	  *newclt = del_in_list(*newclt, list->c);
-	  call_deadhandler(cnt->deadclient->c, NULL);
-	  delete_client(list->c);
-	}
+	loss_tmp_client(list->c);
       if (ret == 1)
 	{
 	  const t_trame	*trame;
@@ -81,10 +91,7 @@ int		check_tmp(t_tmp **newclt, fd_set *maskr, fd_set *maskw,
 	      else
 		call_clienthandler(clt, trame);
 	      if (clt->state == STATE_DROP)
-		{
-		  delete_client(clt);
-		  break;
-		}
+		break;
 	    }
 	}
       if (*res <= 0)
@@ -104,10 +111,7 @@ int		check_clients(fd_set *maskr, fd_set *maskw, int *res)
   for (i = 0; *res > 0 && cnt->clients[i]; i++)
     {
       if ((ret = manage_client(cnt->clients[i], maskr, maskw, res)) < 0)
-	{
-	  loss_client(cnt->clients[i]);
-	  i = -1;
-	}
+	loss_client(cnt->clients[i--]);
       if (ret == 1)
 	{
 	  const t_trame	*trame;
@@ -119,10 +123,7 @@ int		check_clients(fd_set *maskr, fd_set *maskw, int *res)
 	    {
 	      call_clienthandler(tmp, trame);
 	      if (tmp->state == STATE_DROP)
-		{
-		  delete_client(tmp);
-		  break;
-		}
+		break;
 	    }
 	}
       if (*res <= 0)

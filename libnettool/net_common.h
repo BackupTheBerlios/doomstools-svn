@@ -33,7 +33,6 @@
 #define STATE_DEAD		(1)
 #define STATE_DROP		(2)
 #define STATE_FAIL_RECV		(3) // ca arrive quand il s'est deconnecté
-#define STATE_PLAYER		(4)
 
 typedef TCPsocket	t_socket;
 
@@ -125,6 +124,7 @@ int		manage_client(struct s_client *client, fd_set *maskr,
 			      fd_set *maskw, int *res);
 int		check_clients(fd_set *maskr, fd_set *maskw, int *res);
 int		check_server(fd_set *maskr, fd_set *maskw, int *res);
+void		check_dead();
 
 /*
 ** close_connection.c
@@ -143,9 +143,7 @@ int		init_connection(char *ip, int port);
 void		drop_client(struct s_client *clt);
 void		init_nettool();
 void		nettool_quit();
-
 void		move_last_client(int no);
-int		loss_client(struct s_client *c);
 void		free_client_data(struct s_client *c);
 void		delete_client(struct s_client *c);
 void		init_msg(struct s_trame *msg);
@@ -174,6 +172,11 @@ void		call_deadhandler(t_client *client,
 				 const t_trame *trame);
 void		call_newhandler(t_client *client,
 				const t_trame *trame);
+/*
+** loss_client
+*/
+void		loss_tmp_client(struct s_client *c);
+int		loss_client(struct s_client *c);
 
 /*
 ** close_socket.c

@@ -149,8 +149,8 @@ Uint32		get_msg(t_client *client)
 	{
 	  NETDEBUG(SDLNet_GetError());
 	}
-      client->loss = (unsigned long)STATE_FAIL_RECV;
-      fprintf(stderr, "loss :%s, %d, %d\n",
+      client->state = (unsigned long)STATE_FAIL_RECV;
+      fprintf(stderr, "loss state :%s, %d, %d\n",
 	      strerror(errno), result, (int)data);
       // met dans list deadclient, avec un etat 'fail_recv'
       // (essaie donc d'ecrire qd meme sur la socket)
