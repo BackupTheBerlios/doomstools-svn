@@ -17,17 +17,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "libnettool.h"
 
-void		move_last_player(int no)
+void		delete_client(t_client *c)
 {
-  int		last;
-
-  for (last = 0; cnt->clients[last].sock; last++)
-    ;
-  if (!last)
-    return;
-  if (--last != no)
-    memcpy(&cnt->clients[no], &cnt->clients[last], sizeof(*cnt->clients));
-  cnt->clients = (t_client*)xrealloc(cnt->clients,
-				     sizeof(*cnt->clients) * (last + 1));
-  init_client(&cnt->clients[last]);
+  cnt->allclients = del_in_list(cnt->allclients, c);
+  free_client_data(c);
+  _net_xfree(c);
 }
