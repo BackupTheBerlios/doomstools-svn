@@ -37,18 +37,23 @@ int		xml_init(char *db)
   if (first)
     {
       first = 0;
-      gl_xml = (t_xml*)xmalloc(sizeof(t_xml));
+      gl_xml = (t_xml*)malloc(sizeof(t_xml));
+      if (!gl_xml)
+	{
+	  fprintf(stderr, "Not enough memory\n");
+	  exit(1);
+	}
     }
   if (doc.LoadFile(db) == false)
     {
-      fprintf(fd_log, "error loading BDD (%s)..\n", db);
+      fprintf(stderr, "error loading BDD (%s)..\n", db);
       return (1);
     } 
   gl_xml->depth = 0;
   gl_xml->elm[gl_xml->depth] = doc.FirstChildElement("root");
   if (!gl_xml->elm[gl_xml->depth])
     {
-      fprintf(fd_log, "XML avec les pieds\n");
+      fprintf(stderr, "XML avec les pieds\n");
       return (1);
     }
   gl_xml->last[gl_xml->depth] = 0;
@@ -90,7 +95,11 @@ char		*xml_getstr(char *str)
   if (gl_xml->elm[gl_xml->depth - 1])
     {
       if ((buf = (char*)gl_xml->elm[gl_xml->depth - 1]->Attribute((const char*)str)))
-	return (xstrdup((char*)buf));
+	{
+	  if (!buf)
+	    return (0);
+	  return (strdup((char*)buf));
+	}
     }
   return (0);
 }
@@ -110,8 +119,12 @@ int		xml_next(char *str)
       if (!gl_xml->elm[gl_xml->depth])
 	return (0);
       if (gl_xml->last[gl_xml->depth - 1])
-	xfree(gl_xml->last[gl_xml->depth - 1]);
-      gl_xml->last[gl_xml->depth - 1] = xstrdup(str);
+	free(gl_xml->last[gl_xml->depth - 1]);
+      if (!(gl_xml->last[gl_xml->depth - 1] = strdup(str)))
+	{
+	  fprintf(stderr, "not enough memory\n");
+	  exit(1);
+	}
     }
   gl_xml->last[gl_xml->depth] = 0;
   gl_xml->depth++;

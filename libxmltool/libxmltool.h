@@ -15,19 +15,19 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with ligxmltool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 #ifndef _XML_H_
 #define _XML_H_
 
 #include "tinyxml.h"
 #include "tinystr.h"
 
-#include "libtool/libstdtool.h"
 
 double		xml_getfloat(char *str);
 char		*xml_getstr(char *str);
-int			xml_next(char *str);
+int		xml_next(char *str);
 void		xml_out();
-int			xml_getint(char *str);
-int			xml_init(char *db);
+int		xml_getint(char *str);
+int		xml_init(char *db);
 
 #endif
