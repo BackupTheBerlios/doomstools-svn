@@ -48,7 +48,7 @@ int		loss_client(t_client *c)
 	stock_msg(&(cnt->deadclient->c), TAG_DEAD, 0, NULL);
   }
   else
-    fprintf(fd_log, "warning: unknown state (%d)\n", cnt->clients[i].loss);
+    fprintf(stderr, "warning: unknown state (%d)\n", cnt->clients[i].loss);
   move_last_player(i);
   return (1);
 }

@@ -106,9 +106,9 @@ int			check_select(Uint32 timeout)
   if (retval)
     {
       if (retval < 0 && errno != EINTR)
-	fprintf(fd_log, "select: %s", strerror(errno));
+	fprintf(stderr, "select: %s", strerror(errno));
       else
-	fprintf(fd_log, "select: on m'aurait mentit (reste:%d) ?\n", retval);
+	fprintf(stderr, "select: on m'aurait mentit (reste:%d) ?\n", retval);
       exit(-1);
     }
 #endif

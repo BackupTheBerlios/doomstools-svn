@@ -48,7 +48,8 @@ int	my_send(TCPsocket sock, void *datap, int len)
   return (sent);
 }
 
-int		get_full_msg(t_client *client, char *msg, int first)
+int		get_full_msg(t_client *client, char *msg,
+			     unsigned int first)
 {
   int		len;
   int		more;
@@ -112,7 +113,7 @@ int		update_sent_msg(t_client *client, int len,
 				int result, int first)
 {
   int		start;
-  int		save;
+  unsigned int	save;
   int		tmp;
 
   save = client->pos_send;
@@ -162,7 +163,7 @@ int		update_sent_msg(t_client *client, int len,
     }
   if (client->pos_send != save)
     {
-      fprintf(fd_log, "bug...%d, %d\n", client->pos_send, save);
+      fprintf(stderr, "bug...%d, %d\n", client->pos_send, save);
     }
   return (0);
 }
@@ -172,7 +173,7 @@ int		put_msg(t_client *client)
   int		result;
   static char	*msg = 0;
   int		len;
-  int		first;
+  unsigned int	first;
 
    if (!msg)
      msg = (char*)xmalloc(sizeof(*msg) * NET_MSS);
@@ -197,7 +198,7 @@ int		put_msg(t_client *client)
      {
        NETDEBUG(SDLNet_GetError());
        client->loss = STATE_DROP;
-	fprintf(fd_log, "STATE_FAIL_RECV ! (%d, %s)\n", result, strerror(errno));
+	fprintf(stderr, "STATE_FAIL_RECV ! (%d, %s)\n", result, strerror(errno));
        // met dans list deadclient, avec un etat 'drop'
        return (0);
      }
@@ -221,7 +222,7 @@ int		stock_msg(t_client *client, short tag,
 {
   if (client->pos_stock == client->pos_send && TAG_SEND(client) >= 0)
     {
-      fprintf(fd_log, "WARNING: Too much request, skipping\n");
+      fprintf(stderr, "WARNING: Too much request, skipping\n");
       return (0);
     }
   TAG_STOCK(client) = tag;

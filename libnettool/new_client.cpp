@@ -34,7 +34,7 @@ int		new_client(t_tmp **newclt)
   NETDEBUG("Un nouveau client s'est connecté\n");
   newsock = SDLNet_TCP_Accept(cnt->server.sock);
   if (!newsock)
-    fprintf(fd_log, "accept: %s\n", SDLNet_GetError());
+    fprintf(stderr, "accept: %s\n", SDLNet_GetError());
   else
     {
       put_in_client(newclt, newsock, STATE_NEW);

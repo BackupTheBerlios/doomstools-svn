@@ -31,7 +31,7 @@ void		nop(int sig)
 {
 #ifndef WIN32
   if (sig == SIGPIPE)
-    fprintf(fd_log, "Caught \"Broken Pipe\", skipping..\n");
+    fprintf(stderr, "Caught \"Broken Pipe\", skipping..\n");
 #endif
 }
 
@@ -45,7 +45,7 @@ int		init_connection(int port)
 #endif
       if (SDLNet_Init() == -1)
 	{
-	  fprintf(fd_log, "SDLNet_Init: %s\n", SDLNet_GetError());
+	  fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
 	  return (1);
 	}
       atexit(SDLNet_Quit);
@@ -58,7 +58,7 @@ int		init_connection(int port)
     }
   if (SDLNet_ResolveHost(&cnt->ip, NULL, port) == -1)
     {
-      fprintf(fd_log, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+      fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
       return (1);
     }
   if (cnt->server.sock)
@@ -66,7 +66,7 @@ int		init_connection(int port)
   cnt->server.sock = SDLNet_TCP_Open(&cnt->ip);
   if (!cnt->server.sock)
     {
-      fprintf(fd_log, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+      fprintf(stderr, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
       return (1);
     }
   return (0);
@@ -77,7 +77,7 @@ int		init_connection(char *connectip, int port)
   int		i;
 
   printf("se connecte:%s (%d)\n", connectip, port);
-  fprintf(fd_log, "se connecte:%s (%d)\n", connectip, port);
+  fprintf(stderr, "se connecte:%s (%d)\n", connectip, port);
   if (!cnt)
     {
       cnt = (t_connections*)xmalloc(sizeof(*cnt));
@@ -86,7 +86,7 @@ int		init_connection(char *connectip, int port)
 #endif
       if (SDLNet_Init() == -1)
 	{
-	  fprintf(fd_log, "SDLNet_Init: %s\n", SDLNet_GetError());
+	  fprintf(stderr, "SDLNet_Init: %s\n", SDLNet_GetError());
 	  return (1);
 	}
       atexit(SDLNet_Quit);
@@ -99,7 +99,7 @@ int		init_connection(char *connectip, int port)
     }
   if (SDLNet_ResolveHost(&cnt->ip, connectip, port) == -1)
     {
-      fprintf(fd_log, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
+      fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
       return (1);
     }
   for (i = 0; cnt->clients[i].sock; i++)
@@ -109,7 +109,7 @@ int		init_connection(char *connectip, int port)
   cnt->clients[i].sock = SDLNet_TCP_Open(&cnt->ip);
   if (!cnt->clients[i].sock)
     {
-      fprintf(fd_log, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
+      fprintf(stderr, "SDLNet_TCP_Open: %s\n", SDLNet_GetError());
       return (1);
     }
   init_client(&cnt->clients[i + 1]);

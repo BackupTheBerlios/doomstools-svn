@@ -15,33 +15,17 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with libnettool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-/*
-** network.h for zappy in /u/ept2/huot_j/zappy
-** 
-** Made by jonathan huot
-** Login   <huot_j@epita.fr>
-** 
-** Started on  Mon May 24 16:02:20 2004 jonathan huot
-** Last update Sat Jul  3 17:49:07 2004 
-*/
 
 #ifndef _NETWORK_H_
 #define _NETWORK_H_
 
 #include <signal.h>
 
-#ifndef _FREEWAR_H_
 #include "SDL/SDL.h"
 #include "SDLnetsys.h"
 #include "SDL/SDL_net.h"
-#endif
-extern FILE *fd_log;
 
 #include "net_common.h"
-
-/* #ifdef __Cplusplus */
-/* #pragma pack */
-/* #endif */
 
 #ifdef NETWORK_DEBUG
 #define NETDEBUG(x) (put_error(x))
@@ -92,7 +76,9 @@ struct _TCPsocket {
 	// ( 01/02/20 )
 	int rcvdPassConn;
 };
-#else
+
+#else // !MACOS_OPENTRANSPORT
+
 struct _TCPsocket {
 	int ready;
 	SOCKET channel;
@@ -100,7 +86,7 @@ struct _TCPsocket {
 	IPaddress localAddress;
 	int sflag;
 };
-#endif
+#endif // MACOS_OPENTRANSPORT
 
 #define TAG_RECV(x) (x->recv[x->pos_recv].tag)
 #define LEN_RECV(x) (x->recv[x->pos_recv].len)

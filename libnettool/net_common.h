@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with libnettool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 #ifndef _NET_COMMON_H_
 #define _NET_COMMON_H_
 
@@ -77,15 +78,26 @@ extern struct s_connections	*cnt;
 */
 int		my_recv(TCPsocket sock, void *data, int maxlen);
 Uint32		get_msg(struct s_client *client);
-int		LIBNETTOOL_API exec_msg(struct s_client *client, struct s_trame *t);
+
+#ifdef WIN32
+int LIBNETTOOL_API exec_msg(struct s_client *client, struct s_trame *t);
+#else
+int		exec_msg(struct s_client *client, struct s_trame *t);
+#endif
 
 /*
 ** send.c
 */
 int		my_send(TCPsocket sock, void *datap, int len);
 int		put_msg(struct s_client *client);
+
+#ifdef WIN32
 int		LIBNETTOOL_API stock_msg(struct s_client *client, short tag,
 			  unsigned int len, void *msg);
+#else
+int		stock_msg(struct s_client *client, short tag,
+			  unsigned int len, void *msg);
+#endif
 
 /*
 ** list.c
@@ -108,25 +120,35 @@ int		check_server(fd_set *maskr, fd_set *maskw, int *res);
 /*
 ** old.c // deprecated
 */
-int			is_valid_trame(t_trame *t, short tag);
-void			send_trame(t_client *clt, t_trame *tlv);
-int			recv_trame(t_client *client, t_trame *trame);
-int			receive_one_request(t_trame *req);
-int			recv_client_req(t_client *client, t_trame *req);
+int		is_valid_trame(t_trame *t, short tag);
+void		send_trame(t_client *clt, t_trame *tlv);
+int		recv_trame(t_client *client, t_trame *trame);
+int		receive_one_request(t_trame *req);
+int		recv_client_req(t_client *client, t_trame *req);
 /*
 ** solo
 */
+#ifdef WIN32
 int		LIBNETTOOL_API msg_wait(struct s_client *client);
+int		LIBNETTOOL_API check_select(Uint32 timeout);
+int		LIBNETTOOL_API init_connection(int port);
+int		LIBNETTOOL_API init_connection(char *ip, int port);
+void		LIBNETTOOL_API close_connection();
+void		LIBNETTOOL_API drop_client(struct s_client *clt);
+#else
+int		msg_wait(struct s_client *client);
+int		check_select(Uint32 timeout);
+int		init_connection(int port);
+int		init_connection(char *ip, int port);
+void		close_connection();
+void		drop_client(struct s_client *clt);
+#endif
+
 void		move_last_player(int no);
 int		loss_client(struct s_client *c);
 void		free_client(struct s_client *c);
-int		LIBNETTOOL_API check_select(Uint32 timeout);
 void		init_msg(struct s_trame *msg);
 void		init_client(struct s_client *client);
-int		LIBNETTOOL_API init_connection(int port);
-int		LIBNETTOOL_API init_connection(char *ip, int port);
-void	LIBNETTOOL_API 	close_connection();
 void		add_client();
 int		new_client(struct s_tmp **newtmp);
-void	LIBNETTOOL_API	drop_client(struct s_client *clt);
 #endif
