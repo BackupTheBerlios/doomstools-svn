@@ -1,0 +1,89 @@
+// Copyright (C) 2004 Doomsday <doomsday@mailclub.net>
+
+// This file is part of liblogtool.
+
+// liblogtool is free software; you can redistribute it and/or modify
+// it under the terms of the GNU Lesser Public License as published by
+// the Free Software Foundation; either version 2.1 of the License, or
+// (at your option) any later version.
+
+// liblogtool is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser Public License for more details.
+
+// You should have received a copy of the GNU Lesser Public License
+// along with liglogtool; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+// std.cpp for freewar in /u/ept2/ribas_j/freewar/src
+// 
+// Made by jonathan ribas
+// Login   <ribas_j@epita.fr>
+// 
+// Started on  Mon May  3 13:19:28 2004 jonathan ribas
+// Last update Wed Jun 30 16:04:39 2004 
+//
+
+#include "liblogtool.h"
+
+c_log::c_log()
+{
+  init(NULL);
+}
+
+c_log::c_log(string file)
+{
+  init(file);
+}
+
+c_log::~c_log()
+{
+  close();
+}
+
+bool		c_log::init(string file)
+{
+  FILE		*fd;
+
+  if (!file)
+    file = LOG_FILE;
+  if((fd = fopen(s, "w")) == NULL)
+    {
+      cerr << file << " fopen failed" << endl;
+      _fd_log = NULL;
+      return (false);
+    }
+  else
+    {
+      _fd_log = fd;
+      fprintf(_fd_log, "<LOG START>\n");
+    }
+  return (true);
+}
+
+void		c_log::close()
+{
+  if (_fd_log)
+    fclose(_fd_log);
+  _fd_log = NULL;
+}
+
+void		c_log::set_out(short out)
+{
+  cout << "set this " << out << endl;
+}
+
+int		c_log::put(string s)
+{
+  if (fd_log)
+    {
+      fprintf(fd_log, "%s\n", s);
+    }
+  else
+    printf("Warning: log is not initialised\n");
+  printf("%s\n", s);
+//   if (C)
+//     throw s;
+  return (1);
+}
