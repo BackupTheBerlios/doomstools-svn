@@ -1,4 +1,8 @@
-#include "libnettool.h"
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+#include "doomstools/libnettool.h"
 
 // define tag communication:
 enum
@@ -83,13 +87,24 @@ void	process_clients(t_client *c, const t_trame *t,
     printf("ERROR: got %d\n", t->tag);
 }
 
+#ifdef WIN32
+int APIENTRY _tWinMain(HINSTANCE hInstance,
+                     HINSTANCE hPrevInstance,
+                     LPTSTR    lpCmdLine,
+                     int       nCmdShow)
+#else // !WIN32
 int	main(int ac, char **av)
+#endif // WIN32
 {
   int	i = 0;
 
   // doit absolument etre apelle avant d'autres appels a la lib
   init_nettool();
-  if (ac > 1) // server mode
+#ifdef WIN32
+  if (nCmdShow > 1) // server mode
+#else // !WIN32
+  if (ac > 1)
+#endif // WIN32
     {
       // set handlers
       assign_newclient(process_newclient, NULL);

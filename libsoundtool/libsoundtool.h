@@ -1,6 +1,10 @@
 #ifndef _LIBSOUNDTOOL_H_
 #define _LIBSOUNDTOOL_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -29,5 +33,9 @@ void		*_sound_xmalloc(size_t len);
 void		*_sound_xrealloc(void *ptr, size_t len);
 void            _sound_my_free_ptr_ptr(char **p);
 void		_sound_xfree(void *p);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

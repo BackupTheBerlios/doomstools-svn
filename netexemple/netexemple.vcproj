@@ -2,8 +2,8 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="7.10"
-	Name="libxmltool"
-	ProjectGUID="{41ED0D16-392D-450D-BA96-EB00B3054C71}"
+	Name="netexemple"
+	ProjectGUID="{7A3C0A8D-88F7-4547-9A6E-D02BB75AAD7D}"
 	Keyword="Win32Proj">
 	<Platforms>
 		<Platform
@@ -14,27 +14,31 @@
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
-			ConfigurationType="4"
+			ConfigurationType="1"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="D:\projs\include"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
-				UsePrecompiledHeader="0"
+				RuntimeLibrary="4"
+				UsePrecompiledHeader="2"
+				PrecompiledHeaderThrough=""
+				PrecompiledHeaderFile=""
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="4"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLibrarianTool"
-				AdditionalOptions="libstdtool.lib"
-				OutputFile="/projs/lib/libxmltool.lib"
-				AdditionalLibraryDirectories="/projs/lib"/>
+				Name="VCLinkerTool"
+				AdditionalOptions="SDL.lib SDLmain.lib SDL_net.lib wsock32.lib libnettool.lib"
+				LinkIncremental="2"
+				GenerateDebugInformation="FALSE"
+				SubSystem="2"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -49,6 +53,8 @@
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -58,21 +64,28 @@
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
-			ConfigurationType="4"
+			ConfigurationType="2"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				RuntimeLibrary="4"
-				UsePrecompiledHeader="0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;LIBNETTOOL_EXPORTS"
+				RuntimeLibrary="0"
+				UsePrecompiledHeader="3"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="3"/>
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/libxmltool.lib"/>
+				Name="VCLinkerTool"
+				OutputFile="$(OutDir)/libnettool.dll"
+				LinkIncremental="1"
+				GenerateDebugInformation="TRUE"
+				SubSystem="2"
+				OptimizeReferences="2"
+				EnableCOMDATFolding="2"
+				ImportLibrary="$(OutDir)/libnettool.lib"
+				TargetMachine="1"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -87,6 +100,8 @@
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
+			<Tool
+				Name="VCWebDeploymentTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -101,25 +116,13 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\libxmltool.cpp">
+				RelativePath=".\netexemple.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
-			<File
-				RelativePath=".\liblogtool.h">
-			</File>
-			<File
-				RelativePath=".\libxmltool.h">
-			</File>
-			<File
-				RelativePath=".\tinystr.h">
-			</File>
-			<File
-				RelativePath=".\tinyxml.h">
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
