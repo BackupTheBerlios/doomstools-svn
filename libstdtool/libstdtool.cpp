@@ -15,15 +15,6 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with ligstdtool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
-// std.cpp for freewar in /u/ept2/ribas_j/freewar/src
-// 
-// Made by jonathan ribas
-// Login   <ribas_j@epita.fr>
-// 
-// Started on  Mon May  3 13:19:28 2004 jonathan ribas
-// Last update Wed Jun 30 16:04:39 2004 
-//
 
 #include "libstdtool.h"
 
@@ -38,7 +29,7 @@ void		*xmalloc(size_t len)
 #endif
   if (!p)
     {
-      fprintf(fd_log, "Out of memory (%d bytes needed).\n", len);
+      fprintf(stderr, "Out of memory (%d bytes needed).\n", len);
       exit(-1);
     }
   return (p);
@@ -55,7 +46,7 @@ void		*xrealloc(void *ptr, size_t len)
 #endif
   if (!p)
     {
-      fprintf(fd_log, "Out of memory (%d bytes needed)\n", len);
+      fprintf(stderr, "Out of memory (%d bytes needed)\n", len);
       exit(-1);
     }
   return (p);
@@ -74,7 +65,7 @@ char		*xstrdup(char *s)
 #endif
   if (!ptr)
     {
-      fprintf(fd_log, "out of memory\n");
+      fprintf(stderr, "out of memory\n");
       exit(-1);
     }
   return (ptr);
@@ -98,7 +89,7 @@ char		*xstrndup(char *s, size_t len)
 #endif
   if (!ptr)
     {
-      fprintf(fd_log, "out of memory\n");
+      fprintf(stderr, "out of memory\n");
       exit(-1);
     }
   return (ptr);
@@ -108,24 +99,21 @@ int		xstrlen(char *s)
 {
   if (s)
     return ((int)strlen(s));
-  else
-    return (0);
+  return (0);
 }
 
 char		*xstrcpy(char *dst, char *src)
 {
   if (dst && src)
-    return(strcpy(dst, src));
-  else
-    return(dst);
+    return (strcpy(dst, src));
+  return (dst);
 }
 
 char		*xstrncpy(char *dst, char *src, size_t len)
 {
   if (dst && src)
-    return(strncpy(dst, src, len));
-  else
-    return(dst);
+    return (strncpy(dst, src, len));
+  return (dst);
 }
 
 FILE            *xfopen(char *s, char *mode)
@@ -135,7 +123,7 @@ FILE            *xfopen(char *s, char *mode)
   fd = fopen(s, mode);
   if (!fd)
     {
-      put_error("Failed to open file'");
+      fprintf(stderr, "Failed to open %s\n", s);
       return (0);
     }
   return (fd);
@@ -148,7 +136,10 @@ size_t		xfread(void *ptr, size_t size,
 
   ret = fread(ptr, size, nmemb, stream);
   if (size && nmemb && ret < nmemb)
-    return (put_error("Read failed on file descriptor"));
+    {
+      fprintf(stderr, "Read failed on file descriptor\n");
+      return (1);
+    }
   return (0);
 }
 
@@ -159,7 +150,10 @@ size_t		xfwrite(void *ptr, size_t size,
 
   ret = fwrite(ptr, size, nmemb, stream);
   if (size && nmemb && ret < nmemb)
-    return (put_error("Write failed on file descriptor"));
+    {
+      fprintf(stderr, "Write failed on file descriptor\n");
+      return (1);
+    }
   return (0);
 }
 

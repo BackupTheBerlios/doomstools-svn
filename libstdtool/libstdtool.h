@@ -15,14 +15,13 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with ligstdtool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-#ifndef _STD_H_
-#define _STD_H_
+
+#ifndef _LIBSTDTOOL_H_
+#define _LIBSTDTOOL_H_
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
-#include "libtool/liblogtool.h"
 
 void	xfree(void *ptr);
 void	*xmalloc(unsigned int size);
@@ -33,7 +32,7 @@ char	*xstrncpy(char *dst, char *src, size_t len);
 char	*xstrcpy(char *dst, char *src);
 void	*xrealloc(void *ptr, size_t len);
 char	*xstrndup(char *s, size_t len);
-int		xstrlen(char *s);
+int	xstrlen(char *s);
 
 
 #endif
