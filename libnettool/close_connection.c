@@ -27,21 +27,6 @@
 
 #include "libnettool.h"
 
-void		_freelist(t_tmp **origin)
-{
-  t_tmp		*next;
-  t_tmp		*list;
-
-  list = *origin;
-  while (list)
-    {
-      next = list->next;
-      free(list);
-      list = next;
-    }
-  *origin = NULL;
-}
-
 void		close_connection()
 {
   t_tmp		*list;
@@ -53,11 +38,9 @@ void		close_connection()
   for (list = cnt->allclients; list; list = next)
     {
       next = list->next;
-      SDLNet_TCP_Close(list->c->sock);
+      close_socket(&list->c->sock);
       delete_client(list->c);
-      _net_xfree(list);
     }
-  _net_xfree(cnt->allclients);
   cnt->allclients = NULL;
   cnt->clients = (t_client**)_net_xmalloc(sizeof(*cnt->clients));
   cnt->clients[0] = NULL;
@@ -65,8 +48,7 @@ void		close_connection()
 
 void		close_server_connection()
 {
-  if (cnt->server.sock)
-    SDLNet_TCP_Close(cnt->server.sock);
+  close_socket(&cnt->server.sock);
   cnt->server.sock = 0;
 }
 
@@ -76,12 +58,11 @@ void		close_client_connection(t_client *client)
 
   if (!client)
     return;
-  if (client->sock)
-    SDLNet_TCP_Close(client->sock);
+  close_socket(&client->sock);
   cnt->newclient = del_in_list(cnt->newclient, client);
   cnt->newclient = del_in_list(cnt->deadclient, client);
   for (i = 0; cnt->clients[i]; i++)
     if (cnt->clients[i] == client)
       move_last_client(i);
-  delete_client(client);
+  client->state = STATE_DROP;
 }

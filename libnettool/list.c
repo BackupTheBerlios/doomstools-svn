@@ -27,16 +27,19 @@
 
 #include "libnettool.h"
 
-void	free_list_client(t_tmp *newclt)
+void		_freelist(t_tmp **origin)
 {
-  t_tmp	*next;
+  t_tmp		*next;
+  t_tmp		*list;
 
-  while (newclt)
+  list = *origin;
+  while (list)
     {
-      next = newclt->next;
-      _net_xfree(newclt);
-      newclt = next;
+      next = list->next;
+      _net_xfree(list);
+      list = next;
     }
+  *origin = NULL;
 }
 
 t_tmp	*del_in_list(t_tmp *newclt, t_client *c)
@@ -72,8 +75,6 @@ void	put_in_tmp_client(t_tmp **begin, t_client *c)
 
   newclt = (t_tmp*)_net_xmalloc(sizeof(*newclt));
   newclt->c = c;
-  newclt->state = c->loss;
-  c->loss = 0;
   newclt->next = *begin;
   *begin = newclt;
 }
@@ -86,7 +87,7 @@ void	put_in_client(t_tmp **begin, TCPsocket sock, int state)
   newclt->c = create_client();
   init_client(newclt->c);
   newclt->c->sock = sock;
-  newclt->state = state;
+  newclt->c->state = state;
   newclt->next = *begin;
   *begin = newclt;
 }

@@ -34,8 +34,7 @@ int		init_server_connection(int port)
       fprintf(stderr, "SDLNet_ResolveHost: %s\n", SDLNet_GetError());
       return (1);
     }
-  if (cnt->server.sock)
-    SDLNet_TCP_Close(cnt->server.sock);
+  close_socket(&cnt->server.sock);
   cnt->server.sock = SDLNet_TCP_Open(&cnt->ip);
   if (!cnt->server.sock)
     {

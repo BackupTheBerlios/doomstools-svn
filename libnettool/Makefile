@@ -6,7 +6,7 @@ SRCS	=	lib$(NAME).c check_select.c check_sockets.c\
 		recv.c send.c init_connection.c authorize_client.c\
 		assign.c netxstd.c old.c nettool_quit.c insert_client.c\
 		delete_client.c create_client.c call_handler.c\
-		set_data_client.c
+		set_data_client.c close_socket.c
 OBJS	=	$(SRCS:.c=.o)
 
 CC	=	gcc

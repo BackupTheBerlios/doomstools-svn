@@ -32,8 +32,10 @@
 #define STATE_NEW		(0)
 #define STATE_DEAD		(1)
 #define STATE_DROP		(2)
-#define STATE_FAIL_RECV		(3)
-#define STATE_PLAYER	(4)
+#define STATE_FAIL_RECV		(3) // ca arrive quand il s'est deconnecté
+#define STATE_PLAYER		(4)
+
+typedef TCPsocket	t_socket;
 
 typedef struct		s_trame
 {
@@ -60,15 +62,15 @@ typedef struct		s_client
   unsigned int		pos_stock;
   t_trame		recv[NET_MAX_MSG];
   t_trame		send[NET_MAX_MSG];
-  TCPsocket		sock;
+  t_socket		sock;
   unsigned short	authorized;
   unsigned long		loss;
+  int			state;
   void			*data; // le no du player associe' par exemple.
 }			t_client;
 
 typedef struct		s_tmp
 {
-  int			state;
   t_client		*c;
   struct s_tmp		*next;
 }			t_tmp;
@@ -109,7 +111,7 @@ int		stock_remote_msg(short tag, unsigned int len, void *msg);
 /*
 ** list.c
 */
-void		free_list_client(struct s_tmp *newtmp);
+void		_freelist(struct s_tmp **newtmp);
 void		put_in_tmp_client(struct s_tmp **begin, struct s_client *c);
 struct s_tmp	*del_in_list(struct s_tmp *newtmp, struct s_client *c);
 void		put_in_client(struct s_tmp **begin, TCPsocket sock, int state);
@@ -173,7 +175,10 @@ void		call_deadhandler(t_client *client,
 void		call_newhandler(t_client *client,
 				const t_trame *trame);
 
-
+/*
+** close_socket.c
+*/
+void		close_socket(t_socket *sock);
 /*
 ** old.c
 */

@@ -61,9 +61,9 @@ int		check_tmp(t_tmp **newclt, fd_set *maskr, fd_set *maskw,
       next = list->next;
       if ((ret = manage_client(list->c, maskr, maskw, res)) < 0)
 	{
-	  call_deadhandler(cnt->deadclient->c, NULL);
-	  SDLNet_TCP_Close(list->c->sock);
+	  close_socket(&list->c->sock);
 	  *newclt = del_in_list(*newclt, list->c);
+	  call_deadhandler(cnt->deadclient->c, NULL);
 	  delete_client(list->c);
 	}
       if (ret == 1)
@@ -75,10 +75,17 @@ int		check_tmp(t_tmp **newclt, fd_set *maskr, fd_set *maskw,
 	  flg = 1;
 	  clt = list->c;
 	  while ((trame = exec_msg(clt)))
-	    if (!clt->authorized)
-	      call_newhandler(clt, trame);
-	    else
-	      call_clienthandler(clt, trame);
+	    {
+	      if (!clt->authorized)
+		call_newhandler(clt, trame);
+	      else
+		call_clienthandler(clt, trame);
+	      if (clt->state == STATE_DROP)
+		{
+		  delete_client(clt);
+		  break;
+		}
+	    }
 	}
       if (*res <= 0)
 	return (flg);
@@ -104,10 +111,19 @@ int		check_clients(fd_set *maskr, fd_set *maskw, int *res)
       if (ret == 1)
 	{
 	  const t_trame	*trame;
+	  t_client	*tmp;
 
 	  flg = 1;
-	  while ((trame = exec_msg(cnt->clients[i])))
-	    call_clienthandler(cnt->clients[i], trame);
+	  tmp = cnt->clients[i];
+	  while ((trame = exec_msg(tmp)))
+	    {
+	      call_clienthandler(tmp, trame);
+	      if (tmp->state == STATE_DROP)
+		{
+		  delete_client(tmp);
+		  break;
+		}
+	    }
 	}
       if (*res <= 0)
 	return (flg);

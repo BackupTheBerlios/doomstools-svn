@@ -41,7 +41,7 @@ void		*_net_xmalloc(size_t len)
 
   p = malloc(len);
 #ifdef MALLOCDEBUG
-  printf("MALLOC: %d allouer\n", p);
+  printf("MALLOC: %d allouer\n", (int)p);
   fflush(stdout);
 #endif
   if (!p)
@@ -58,7 +58,7 @@ void		*_net_xrealloc(void *ptr, size_t len)
 
   p = realloc(ptr, len);
 #ifdef MALLOCDEBUG
-  printf("MALLOC: %d transform en %d\n", ptr, p);
+  printf("MALLOC: %d transform en %d\n", (int)ptr, (int)p);
   fflush(stdout);
 #endif
   if (!p)
@@ -72,7 +72,7 @@ void		*_net_xrealloc(void *ptr, size_t len)
 void		_net_xfree(void *p)
 {
 #ifdef MALLOCDEBUG
-  printf("MALLOC: %d liberer\n", p);
+  printf("MALLOC: %d liberer\n", (int)p);
   fflush(stdout);
 #endif
   free(p);

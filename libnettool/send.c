@@ -156,7 +156,7 @@ int		update_sent_msg(t_client *client, int len,
 	    }
 	}
       if (MSG_SEND(client))
-	free(MSG_SEND(client));
+	_net_xfree(MSG_SEND(client));
       init_msg(&client->send[client->pos_send]);
       if (++client->pos_send >= NET_MAX_MSG)
 	client->pos_send = 0;
@@ -175,20 +175,24 @@ int		put_msg(t_client *client)
   int		len;
   unsigned int	first;
 
-   if (!msg)
-     msg = (char*)_net_xmalloc(sizeof(*msg) * NET_MSS);
-   first = client->pos_send;
-   len = get_full_msg(client, msg, first);
-   result = my_send(client->sock, msg, len);
-   if (result <= 0)
-     {
-       NETDEBUG(SDLNet_GetError());
-       client->loss = STATE_DROP;
-	fprintf(stderr, "STATE_FAIL_RECV ! (%d, %s)\n", result, strerror(errno));
-       // met dans list deadclient, avec un etat 'drop'
-       return (0);
-     }
-   update_sent_msg(client, len, result, first);
+  if (!msg) // can't be dealloced, so using malloc system
+    if (!(msg = (char*)malloc(sizeof(*msg) * NET_MSS)))
+      {
+	fprintf(stderr, "Not enough memory\n");
+	exit(42);
+      }
+  first = client->pos_send;
+  len = get_full_msg(client, msg, first);
+  result = my_send(client->sock, msg, len);
+  if (result <= 0)
+    {
+      NETDEBUG(SDLNet_GetError());
+      client->loss = STATE_DROP;
+      fprintf(stderr, "STATE_FAIL_RECV ! (%d, %s)\n", result, strerror(errno));
+      // met dans list deadclient, avec un etat 'drop'
+      return (0);
+    }
+  update_sent_msg(client, len, result, first);
   return (result);
 }
 

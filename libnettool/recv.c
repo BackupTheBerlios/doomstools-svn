@@ -120,7 +120,9 @@ int		cut_trame_in_msg(t_client *client, char *msg, int result)
 			 (LEN_RECV(client) * sizeof(*MSG_RECV(client)))))
 	{
 	  // message complet
+#ifdef NETWORK_DEBUG
 	  printf("DEBUG: GOT %d\n", TAG_RECV(client));
+#endif
 	  got_one = 1;
 	  if (++client->pos_recv >= NET_MAX_MSG)
 	    client->pos_recv = 0;
@@ -134,8 +136,12 @@ Uint32		get_msg(t_client *client)
   int		result;
   static char	*data = 0;
 
-  if (!data)
-    data = (char*)_net_xmalloc(sizeof(*data) * NET_MSS);
+  if (!data) // can't be dealloced, so using malloc system
+    if (!(data = (char*)malloc(sizeof(*data) * NET_MSS)))
+      {
+	fprintf(stderr, "Not enough memory\n");
+	exit(43);
+      }
   result = my_recv(client->sock, data, NET_MSS);
   if (result <= 0)
     {
@@ -163,8 +169,12 @@ const t_trame		*_get_trame(t_client *client)
 {
   static t_trame	*ret = NULL;
 
-  if (!ret)
-    ret = (t_trame*)_net_xmalloc(sizeof(*ret));
+  if (!ret) // can't be dealloced, so using malloc system
+    if (!(ret = (t_trame*)malloc(sizeof(*ret))))
+      {
+	fprintf(stderr, "Not enough memory\n");
+	exit(44);
+      }
   ret->tag = TAG_EXEC(client);
   ret->len = LEN_EXEC(client);
   ret->msg = MSG_EXEC(client);

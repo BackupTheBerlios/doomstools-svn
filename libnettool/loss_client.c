@@ -36,20 +36,14 @@ int		loss_client(t_client *c)
       break;
   if (!cnt->clients[i])
     return (0);
-  if (cnt->clients[i]->loss == STATE_DROP)
-    {
-      SDLNet_TCP_Close(cnt->clients[i]->sock);
-      delete_client(cnt->clients[i]);
-    }
-  else if (cnt->clients[i]->loss == STATE_DEAD ||
-	   cnt->clients[i]->loss == STATE_FAIL_RECV)
-    {
-      put_in_tmp_client(&cnt->deadclient, cnt->clients[i]);
-      call_deadhandler(cnt->deadclient->c, NULL);
-    }
+  close_socket(&cnt->clients[i]->sock);
+  if (cnt->clients[i]->state == STATE_DEAD ||
+      cnt->clients[i]->state == STATE_FAIL_RECV)
+    call_deadhandler(cnt->clients[i], NULL);
   else
     fprintf(stderr, "warning: unknown state (%d)\n",
-	    (int)cnt->clients[i]->loss);
+	    (int)cnt->clients[i]->state);
+  delete_client(cnt->clients[i]);
   move_last_client(i);
   return (1);
 }
