@@ -66,40 +66,49 @@ int			check_select(Uint32 timeout)
   SOCKET		maxfd;
   int			retval;
   struct timeval	tv;
+  struct timeval	before;
+  struct timeval	left;
   fd_set		maskr;
   fd_set		maskw;
   int			done;
 
   check_dead();
-  printf("Rtiti\n");fflush(stdout);
   FD_ZERO(&maskr);
   FD_ZERO(&maskw);
-  maxfd = fill_fd(&maskr, &maskw);
-  printf("Ttiti\n");fflush(stdout);
+  maxfd = fill_fd(&maskr, &maskw); 
   tv.tv_sec = timeout / 1000;
   tv.tv_usec = (timeout % 1000) * 1000;
-  printf("titi\n");fflush(stdout);
-  retval = select((int)maxfd + 1, &maskr, &maskw, NULL, &tv);
-  printf("titi0\n");fflush(stdout);
   done = 0;
-  if (retval > 0 && check_clients(&maskr, &maskw, &retval))
-    done += 1;
-  printf("titi2 (%d)\n", retval);fflush(stdout);
-  if (retval > 0 && check_server(&maskr, &maskw, &retval))
-    done += 8;
-  printf("titi 2.5\n");fflush(stdout);
-#ifdef NETWORK_DEBUG
-  if (retval)
+  while (!done)
     {
-      if (retval < 0 && errno != EINTR)
-	fprintf(stderr, "select: %s", strerror(errno));
-      else
-	fprintf(stderr, "select: on m'aurait mentit (reste:%d) ?\n", retval);
-      exit(-1);
+      cnt->select_recv = 0;
+      gettimeofday(&before, NULL);
+      retval = select((int)maxfd + 1, &maskr, &maskw, NULL, &tv);
+      done = 0;
+      if (retval > 0 && check_clients(&maskr, &maskw, &retval))
+	done += 1;
+      if (retval > 0 && check_server(&maskr, &maskw, &retval))
+	done += 8;
+      if (retval)
+	{
+	  if (retval < 0 && errno != EINTR)
+	    fprintf(stderr, "select: %s", strerror(errno));
+	  else
+	    fprintf(stderr, "select: on m'aurait mentit (reste:%d) ?\n",
+		    retval);
+	  exit(-1);
+	}
+      check_dead();
+      gettimeofday(&left, NULL);
+      left.tv_sec -= before.tv_sec;
+      left.tv_usec -= before.tv_usec;
+      if (cnt->select_recv &&
+	  left.tv_sec < tv.tv_sec && left.tv_usec < tv.tv_usec)
+	{
+	  done = 0;
+	  memcpy(&tv, &left, sizeof(left));
+	}
     }
-#endif
-  check_dead();
-  printf("titi3\n");fflush(stdout);
   return (done);
 }
 

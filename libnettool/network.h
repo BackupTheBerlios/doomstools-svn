@@ -150,7 +150,10 @@ typedef struct		s_connections
   struct s_tmp		*deadclient;
   struct s_client	**clients;
 
-/*   struct s_client	*allclients; */
+  // pour manage_select, permet de savoir si un message a été recu,
+  // il arrete de tourner.
+  int			select_recv;
+
   struct s_tmp		*allclients;
   struct s_client	server;
   void			(*f_newclient)(t_client *client,

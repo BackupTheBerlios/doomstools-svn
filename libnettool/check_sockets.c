@@ -75,6 +75,7 @@ int		check_client(fd_set *maskr, fd_set *maskw,
     {
       const t_trame	*trame;
       
+      cnt->select_recv = 1;
       while ((trame = exec_msg(client)))
 	{
 	  call_handler(client, trame);
