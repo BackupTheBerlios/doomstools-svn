@@ -19,6 +19,10 @@
 #ifndef _LIBNETTOOL_H_
 # define _LIBNETTOOL_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 # ifdef WIN32
 
 #  include <windows.h>
@@ -32,5 +36,9 @@
 # endif // WIN32
 
 # include "network.h"
+
+#ifdef __cplusplus
+} // extern "C"
+#endif
 
 #endif // _LIBNETTOOL_H_

@@ -9,7 +9,7 @@ SRCS	=	lib$(NAME).c check_select.c check_sockets.c\
 		set_data_client.c
 OBJS	=	$(SRCS:.c=.o)
 
-CC	=	g++
+CC	=	gcc
 CFLAGS	=	-Wall -g3 `sdl-config --cflags`
 
 $(NAME)	:	$(OBJS)

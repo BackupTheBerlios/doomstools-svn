@@ -48,7 +48,8 @@ int		loss_client(t_client *c)
       call_deadhandler(cnt->deadclient->c, NULL);
     }
   else
-    fprintf(stderr, "warning: unknown state (%d)\n", cnt->clients[i]->loss);
+    fprintf(stderr, "warning: unknown state (%d)\n",
+	    (int)cnt->clients[i]->loss);
   move_last_client(i);
   return (1);
 }

@@ -17,7 +17,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #include "libnettool.h"
 
-void	assign_newclient(void (*f)(t_client *t, const t_trame *t, void *d),
+void	assign_newclient(void (*f)(t_client *c, const t_trame *t, void *d),
 			 void *data)
 {
   // appeler t = NULL dans le cas de la connexion, puis avec un argument 
@@ -26,7 +26,7 @@ void	assign_newclient(void (*f)(t_client *t, const t_trame *t, void *d),
   cnt->data_newclient = data;
 }
 
-void	assign_deadclient(void (*f)(t_client *t, const t_trame *t, void *d),
+void	assign_deadclient(void (*f)(t_client *c, const t_trame *t, void *d),
 			  void *data)
 {
   // appeler dans le cas d'une deconnexion d'un newclient, ou d'un client.
@@ -34,7 +34,7 @@ void	assign_deadclient(void (*f)(t_client *t, const t_trame *t, void *d),
   cnt->data_deadclient = data;
 }
 
-void	assign_clients(void (*f)(t_client *t, const t_trame *t, void *d),
+void	assign_clients(void (*f)(t_client *c, const t_trame *t, void *d),
 		       void *data)
 {
   // appeler des reception d'une trame complete d'un client normal.
