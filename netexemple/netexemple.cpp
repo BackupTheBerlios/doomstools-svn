@@ -98,7 +98,6 @@ int	main(int ac, char **av)
 {
   int	i = 0;
 
-  // doit absolument etre apelle avant d'autres appels a la lib
   init_nettool();
 #ifdef WIN32
   if (nCmdShow > 1) // server mode

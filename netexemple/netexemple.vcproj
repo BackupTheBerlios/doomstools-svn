@@ -23,7 +23,7 @@
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="4"
+				RuntimeLibrary="1"
 				UsePrecompiledHeader="2"
 				PrecompiledHeaderThrough=""
 				PrecompiledHeaderFile=""
@@ -36,6 +36,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="SDL.lib SDLmain.lib SDL_net.lib wsock32.lib libnettool.lib"
 				LinkIncremental="2"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="FALSE"
 				SubSystem="2"
 				TargetMachine="1"/>
