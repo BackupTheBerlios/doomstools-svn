@@ -40,10 +40,7 @@ int		manage_client(t_client *client, fd_set *maskr, fd_set *maskw,
     {
       (*res)--;
       if (get_msg(client))
-	{
-	  cnt->last_recv = client;
-	  return (1);
-	}
+	return (1);
       if (client->loss)
 	return (-1);
     }
@@ -62,14 +59,27 @@ int		check_tmp(t_tmp **newclt, fd_set *maskr, fd_set *maskw,
   for (list = *newclt; *res > 0 && list; list = next)
     {
       next = list->next;
-      if ((ret = manage_client(&list->c, maskr, maskw, res)) < 0)
+      if ((ret = manage_client(list->c, maskr, maskw, res)) < 0)
 	{
-	  free_client(&list->c);
-	  SDLNet_TCP_Close(list->c.sock);
-	  *newclt = del_in_list(*newclt, &list->c);
+	  call_deadhandler(cnt->deadclient->c, NULL);
+	  SDLNet_TCP_Close(list->c->sock);
+	  *newclt = del_in_list(*newclt, list->c);
+	  delete_client(list->c);
 	}
-	if (ret == 1)
-		flg = 1;
+      if (ret == 1)
+	{
+	  const t_trame	*trame;
+	  t_client	*clt;
+
+	  // obligatoirement dans newlist
+	  flg = 1;
+	  clt = list->c;
+	  while ((trame = exec_msg(clt)))
+	    if (!clt->authorized)
+	      call_newhandler(clt, trame);
+	    else
+	      call_clienthandler(clt, trame);
+	}
       if (*res <= 0)
 	return (flg);
       list = next;
@@ -84,15 +94,21 @@ int		check_clients(fd_set *maskr, fd_set *maskw, int *res)
   int		flg;
 
   flg = 0;
-  for (i = 0; *res > 0 && cnt->clients[i].sock; i++)
+  for (i = 0; *res > 0 && cnt->clients[i]; i++)
     {
-      if ((ret = manage_client(&cnt->clients[i], maskr, maskw, res)) < 0)
+      if ((ret = manage_client(cnt->clients[i], maskr, maskw, res)) < 0)
 	{
-	  loss_client(&cnt->clients[i]);
+	  loss_client(cnt->clients[i]);
 	  i = -1;
 	}
       if (ret == 1)
-        flg = 1;
+	{
+	  const t_trame	*trame;
+
+	  flg = 1;
+	  while ((trame = exec_msg(cnt->clients[i])))
+	    call_clienthandler(cnt->clients[i], trame);
+	}
       if (*res <= 0)
 	return (flg);
     }
@@ -106,7 +122,7 @@ int		check_server(fd_set *maskr, fd_set *maskw, int *res)
       {
 	(*res)--;
 	if (new_client(&cnt->newclient))
-	  cnt->last_recv = &cnt->newclient->c;
+	  ;
 	return (1);
       }
   return (0);

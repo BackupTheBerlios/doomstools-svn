@@ -88,59 +88,78 @@ struct _TCPsocket {
 };
 #endif // MACOS_OPENTRANSPORT
 
+#define TRAME_RECV(x) (x->recv[x->pos_recv])
+/* #define STRAME_RECV(x) (x.recv[x.pos_recv]) */
+
 #define TAG_RECV(x) (x->recv[x->pos_recv].tag)
 #define LEN_RECV(x) (x->recv[x->pos_recv].len)
 #define MSG_RECV(x) (x->recv[x->pos_recv].msg)
 #define POS_RECV(x) (x->recv[x->pos_recv].pos)
 #define CHAR_RECV(x) (x->recv[x->pos_recv].msg[x->recv[x->pos_recv].pos])
-#define STAG_RECV(x) (x.recv[x.pos_recv].tag)
-#define SLEN_RECV(x) (x.recv[x.pos_recv].len)
-#define SMSG_RECV(x) (x.recv[x.pos_recv].msg)
-#define SPOS_RECV(x) (x.recv[x.pos_recv].pos)
-#define SCHAR_RECV(x) (x.recv[x.pos_recv].msg[x.recv[x.pos_recv].pos])
+/* #define STAG_RECV(x) (x.recv[x.pos_recv].tag) */
+/* #define SLEN_RECV(x) (x.recv[x.pos_recv].len) */
+/* #define SMSG_RECV(x) (x.recv[x.pos_recv].msg) */
+/* #define SPOS_RECV(x) (x.recv[x.pos_recv].pos) */
+/* #define SCHAR_RECV(x) (x.recv[x.pos_recv].msg[x.recv[x.pos_recv].pos]) */
 
 #define TAG_SEND(x) (x->send[x->pos_send].tag)
 #define LEN_SEND(x) (x->send[x->pos_send].len)
 #define MSG_SEND(x) (x->send[x->pos_send].msg)
 #define POS_SEND(x) (x->send[x->pos_send].pos)
 #define CHAR_SEND(x) (x->send[x->pos_send].msg[x->send.pos])
-#define STAG_SEND(x) (x.send[x.pos_send].tag)
-#define SLEN_SEND(x) (x.send[x.pos_send].len)
-#define SMSG_SEND(x) (x.send[x.pos_send].msg + x.send.pos)
-#define SPOS_SEND(x) (x.send[x.pos_send].pos)
-#define SCHAR_SEND(x) (x.send[x.pos_send].msg[x.send.pos])
+/* #define STAG_SEND(x) (x.send[x.pos_send].tag) */
+/* #define SLEN_SEND(x) (x.send[x.pos_send].len) */
+/* #define SMSG_SEND(x) (x.send[x.pos_send].msg + x.send.pos) */
+/* #define SPOS_SEND(x) (x.send[x.pos_send].pos) */
+/* #define SCHAR_SEND(x) (x.send[x.pos_send].msg[x.send.pos]) */
+
+#define TRAME_EXEC(x) (x->recv[x->pos_exec])
 
 #define TAG_EXEC(x) (x->recv[x->pos_exec].tag)
 #define LEN_EXEC(x) (x->recv[x->pos_exec].len)
 #define MSG_EXEC(x) (x->recv[x->pos_exec].msg)
 #define POS_EXEC(x) (x->recv[x->pos_exec].pos)
 #define CHAR_EXEC(x) (x->recv[x->pos_exec].msg[0])
-#define STAG_EXEC(x) (x.recv[x.pos_exec].tag)
-#define SLEN_EXEC(x) (x.recv[x.pos_exec].len)
-#define SMSG_EXEC(x) (x.recv[x.pos_exec].msg)
-#define SPOS_EXEC(x) (x.recv[x.pos_exec].pos)
-#define SCHAR_EXEC(x) (x.recv[x.pos_exec].msg[0])
+/* #define STAG_EXEC(x) (x.recv[x.pos_exec].tag) */
+/* #define SLEN_EXEC(x) (x.recv[x.pos_exec].len) */
+/* #define SMSG_EXEC(x) (x.recv[x.pos_exec].msg) */
+/* #define SPOS_EXEC(x) (x.recv[x.pos_exec].pos) */
+/* #define SCHAR_EXEC(x) (x.recv[x.pos_exec].msg[0]) */
 
 #define TAG_STOCK(x) (x->send[x->pos_stock].tag)
 #define LEN_STOCK(x) (x->send[x->pos_stock].len)
 #define MSG_STOCK(x) (x->send[x->pos_stock].msg)
 #define POS_STOCK(x) (x->send[x->pos_stock].pos)
 #define CHAR_STOCK(x) (x->send[x->pos_stock].msg[0])
-#define STAG_STOCK(x) (x.send[x.pos_stock].tag)
-#define SLEN_STOCK(x) (x.send[x.pos_stock].len)
-#define SMSG_STOCK(x) (x.send[x.pos_stock].msg)
-#define SPOS_STOCK(x) (x.send[x.pos_stock].pos)
-#define SCHAR_STOCK(x) (x.send[x.pos_stock].msg[0])
+/* #define STAG_STOCK(x) (x.send[x.pos_stock].tag) */
+/* #define SLEN_STOCK(x) (x.send[x.pos_stock].len) */
+/* #define SMSG_STOCK(x) (x.send[x.pos_stock].msg) */
+/* #define SPOS_STOCK(x) (x.send[x.pos_stock].pos) */
+/* #define SCHAR_STOCK(x) (x.send[x.pos_stock].msg[0]) */
 
 typedef struct		s_connections
 {
   struct s_tmp		*newclient;
   struct s_tmp		*deadclient;
-  struct s_client	*clients;
+  struct s_client	**clients;
+
+/*   struct s_client	*allclients; */
+  struct s_tmp		*allclients;
   struct s_client	server;
+  void			(*f_newclient)(t_client *client,
+				       const t_trame *trame,
+				       void *data);
+  void			(*f_deadclient)(t_client *client,
+					const t_trame *trame,
+					void *data);
+  void			(*f_clients)(t_client *client,
+				     const t_trame *trame,
+				     void *data);
+  void			*data_newclient;
+  void			*data_deadclient;
+  void			*data_clients;
   IPaddress		ip;
   char			*host;
-  struct s_client	*last_recv; // pour la compabilité
 }			t_connections;
 
 #endif

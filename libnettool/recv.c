@@ -29,7 +29,7 @@
 
 #ifdef MACOS_OPENTRANSPORT
 // no modified.. waiting for a MAC!
-int	recv(TCPsocket sock, void *data, int maxlen)
+int	my_recv(TCPsocket sock, void *data, int maxlen)
 {
 	int len = 0;
 	OSStatus res;
@@ -71,10 +71,10 @@ int	my_recv(TCPsocket sock, void *data, int maxlen)
       return(-1);
     }
   errno = 0;
+/* FIXME: necessary or not? */
 /*   do { */
     len = recv(sock->channel, (char *) data, maxlen, 0);
 /*   } while ( errno == EINTR ); */
-/*   sock->ready = 0; */
   return (len);
 }
 #endif /* MACOS_OPENTRANSPORT */
@@ -105,7 +105,7 @@ int		cut_trame_in_msg(t_client *client, char *msg, int result)
 	  if (result < tmp)
 	    tmp = result;
 	  if (!MSG_RECV(client))
-	    MSG_RECV(client) = (char*)xmalloc(sizeof(*MSG_RECV(client)) *
+	    MSG_RECV(client) = (char*)_net_xmalloc(sizeof(*MSG_RECV(client)) *
 					      LEN_RECV(client));
 	  memcpy(MSG_RECV(client) + POS_RECV(client) -
 		 sizeof(TAG_RECV(client)) - sizeof(LEN_RECV(client)),
@@ -119,6 +119,8 @@ int		cut_trame_in_msg(t_client *client, char *msg, int result)
 			 sizeof(LEN_RECV(client)) +
 			 (LEN_RECV(client) * sizeof(*MSG_RECV(client)))))
 	{
+	  // message complet
+	  printf("DEBUG: GOT %d\n", TAG_RECV(client));
 	  got_one = 1;
 	  if (++client->pos_recv >= NET_MAX_MSG)
 	    client->pos_recv = 0;
@@ -133,22 +135,7 @@ Uint32		get_msg(t_client *client)
   static char	*data = 0;
 
   if (!data)
-    data = (char*)xmalloc(sizeof(*data) * NET_MSS);
-  // if (POS_RECV(client) < sizeof(TAG_RECV(client)) + sizeof(LEN_RECV(client)))
-  //   result = my_recv(client->sock, &TAG_RECV(client) + POS_RECV(client),
- 	//	     sizeof(TAG_RECV(client)) + sizeof(LEN_RECV(client)));
-  // else
-  //   {
-  //     if (!MSG_RECV(client))
- 	//MSG_RECV(client) = (char*)xmalloc(sizeof(*MSG_RECV(client)) *
- 	//				  LEN_RECV(client));
-  //     result = my_recv(client->sock, MSG_RECV(client) + POS_RECV(client) -
- 	//		sizeof(TAG_RECV(client)) - sizeof(LEN_RECV(client)),
- 	//	       (sizeof(*MSG_RECV(client)) * LEN_RECV(client)) -
- 	//	       POS_RECV(client) +
- 	//	       sizeof(TAG_RECV(client)) +
- 	//	       sizeof(LEN_RECV(client)));
-  //   }
+    data = (char*)_net_xmalloc(sizeof(*data) * NET_MSS);
   result = my_recv(client->sock, data, NET_MSS);
   if (result <= 0)
     {
@@ -157,7 +144,7 @@ Uint32		get_msg(t_client *client)
 	  NETDEBUG(SDLNet_GetError());
 	}
       client->loss = (unsigned long)STATE_FAIL_RECV;
-	  fprintf(stderr, "loss :%s, %d, %d\n", strerror(errno), result, data);
+      fprintf(stderr, "loss :%s, %d, %d\n", strerror(errno), result, data);
       // met dans list deadclient, avec un etat 'fail_recv'
       // (essaie donc d'ecrire qd meme sur la socket)
 
@@ -166,30 +153,52 @@ Uint32		get_msg(t_client *client)
     }
   if (cut_trame_in_msg(client, data, result))
     return (1);
-  // POS_RECV(client) += result;
-  // if (POS_RECV(client) >= (LEN_RECV(client) * sizeof(*MSG_RECV(client))) +
-  //     sizeof(TAG_RECV(client)) + sizeof(LEN_RECV(client)))
-  //   {
-  //     if (++client->pos_recv >= NET_MAX_MSG)
- 	//client->pos_recv = 0;
-  //     return (1);
-  //   }
   return (0);
 }
 
-int		exec_msg(t_client *client, t_trame *t)
+// fonction interne a la lib: on sous-entend qu'un message est en
+// attente obligatoirement..
+const t_trame		*_get_trame(t_client *client)
 {
-  if (!t)
-    return (0);
-  if (msg_wait(client))
+  static t_trame	*ret = NULL;
+
+  if (!ret)
+    ret = (t_trame*)_net_xmalloc(sizeof(*ret));
+  ret->tag = TAG_EXEC(client);
+  ret->len = LEN_EXEC(client);
+  ret->msg = MSG_EXEC(client);
+  return (ret);
+}
+
+// OLD VERSION
+/* int		exec_msg(t_client *client, t_trame *t) */
+/* { */
+/*   if (!t) */
+/*     return (0); */
+/*   if (msg_wait(client)) */
+/*     { */
+/*       t->tag = TAG_EXEC(client); */
+/*       t->len = LEN_EXEC(client); */
+/*       t->msg = MSG_EXEC(client); */
+/*       init_msg(&client->recv[client->pos_exec]); */
+/*       if (++client->pos_exec >= NET_MAX_MSG) */
+/* 	client->pos_exec = 0; */
+/*       return (1); */
+/*     } */
+/*   return (0); */
+/* } */
+
+// with handlers, user doesn't call this one:
+const t_trame	*exec_msg(t_client *client)
+{
+  const t_trame	*ret;
+
+  if (client->pos_exec != client->pos_recv)
     {
-      t->tag = TAG_EXEC(client);
-      t->len = LEN_EXEC(client);
-      t->msg = MSG_EXEC(client);
-      init_msg(&client->recv[client->pos_exec]);
+      ret = &TRAME_EXEC(client);
       if (++client->pos_exec >= NET_MAX_MSG)
 	client->pos_exec = 0;
-      return (1);
+      return (ret);
     }
   return (0);
 }

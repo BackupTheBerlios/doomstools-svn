@@ -27,39 +27,61 @@
 
 #include "libnettool.h"
 
+void		_freelist(t_tmp **origin)
+{
+  t_tmp		*next;
+  t_tmp		*list;
+
+  list = *origin;
+  while (list)
+    {
+      next = list->next;
+      free(list);
+      list = next;
+    }
+  *origin = NULL;
+}
+
 void		close_connection()
 {
   t_tmp		*list;
   t_tmp		*next;
-  int		i;
 
+  _freelist(&cnt->newclient);
+  _freelist(&cnt->deadclient);
+  _net_xfree(cnt->clients);
+  for (list = cnt->allclients; list; list = next)
+    {
+      next = list->next;
+      SDLNet_TCP_Close(list->c->sock);
+      delete_client(list->c);
+      _net_xfree(list);
+    }
+  _net_xfree(cnt->allclients);
+  cnt->allclients = NULL;
+  cnt->clients = (t_client**)_net_xmalloc(sizeof(*cnt->clients));
+  cnt->clients[0] = NULL;
+}
+
+void		close_server_connection()
+{
   if (cnt->server.sock)
     SDLNet_TCP_Close(cnt->server.sock);
-  list = cnt->newclient;
-  while (list)
-    {
-      next = list->next;
-      if (list->c.sock)
-	SDLNet_TCP_Close(list->c.sock);
-      free_client(&list->c);
-      free(list);
-      list = next;
-    }
-  list = cnt->deadclient;
-  while (list)
-    {
-      next = list->next;
-      if (list->c.sock)
-	SDLNet_TCP_Close(list->c.sock);
-      free_client(&list->c);
-      free(list);
-      list = next;
-    }
-  for (i = 0; cnt->clients[i].sock; i++)
-    {
-      SDLNet_TCP_Close(cnt->clients[i].sock);
-      free_client(&cnt->clients[i]);
-    }
-  free(cnt->clients);
-  cnt = 0;
+  cnt->server.sock = 0;
+}
+
+void		close_client_connection(t_client *client)
+{
+  int		i;
+
+  if (!client)
+    return;
+  if (client->sock)
+    SDLNet_TCP_Close(client->sock);
+  cnt->newclient = del_in_list(cnt->newclient, client);
+  cnt->newclient = del_in_list(cnt->deadclient, client);
+  for (i = 0; cnt->clients[i]; i++)
+    if (cnt->clients[i] == client)
+      move_last_client(i);
+  delete_client(client);
 }

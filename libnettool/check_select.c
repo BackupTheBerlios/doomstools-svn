@@ -15,15 +15,6 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with libnettool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-/*
-** my_net.c for zappy in /sgoinfre/freewar/SDL_net-1.2.5
-** 
-** Made by jonathan huot
-** Login   <huot_j@epita.fr>
-** 
-** Started on  Mon May 31 15:25:32 2004 jonathan huot
-// Last update Tue Jun 29 19:20:51 2004 jonathan huot
-*/
 
 #include "libnettool.h"
 
@@ -35,7 +26,7 @@ struct SDLNet_Socket {
 #endif
 };
 
-t_connections		*cnt = 0;
+t_connections		*cnt = NULL;
 
 SOCKET			fill_fd(fd_set *maskr, fd_set *maskw)
 {
@@ -52,26 +43,26 @@ SOCKET			fill_fd(fd_set *maskr, fd_set *maskw)
     maxfd = 0;
   for (list = cnt->newclient; list; list = list->next)
     {
-      if (list->c.sock->channel > maxfd)
-	maxfd = list->c.sock->channel;
-      FD_SET(list->c.sock->channel, maskr);
-      if (STAG_SEND(list->c) >= 0)
-	FD_SET(list->c.sock->channel, maskw);
+      if (list->c->sock->channel > maxfd)
+	maxfd = list->c->sock->channel;
+      FD_SET(list->c->sock->channel, maskr);
+      if (TAG_SEND(list->c) >= 0)
+	FD_SET(list->c->sock->channel, maskw);
     }
-  for (n = 0; cnt->clients[n].sock; n++)
+  for (n = 0; cnt->clients[n]; n++)
     {
-      if (cnt->clients[n].sock->channel > maxfd)
-	maxfd = cnt->clients[n].sock->channel;
-      FD_SET(cnt->clients[n].sock->channel, maskr);
-      if (STAG_SEND(cnt->clients[n]) >= 0)
-	FD_SET(cnt->clients[n].sock->channel, maskw);
+      if (cnt->clients[n]->sock->channel > maxfd)
+	maxfd = cnt->clients[n]->sock->channel;
+      FD_SET(cnt->clients[n]->sock->channel, maskr);
+      if (TAG_SEND(cnt->clients[n]) >= 0)
+	FD_SET(cnt->clients[n]->sock->channel, maskw);
     }
   for (list = cnt->deadclient; list; list = list->next)
     {
-      if (list->c.sock->channel > maxfd)
-	maxfd = list->c.sock->channel;
-      if (STAG_SEND(list->c) >= 0)
-	FD_SET(list->c.sock->channel, maskw);
+      if (list->c->sock->channel > maxfd)
+	maxfd = list->c->sock->channel;
+      if (TAG_SEND(list->c) >= 0)
+	FD_SET(list->c->sock->channel, maskw);
     }
   return (maxfd);
 }
@@ -93,7 +84,6 @@ int			check_select(Uint32 timeout)
   tv.tv_usec = (timeout % 1000) * 1000;
   retval = select((int)maxfd + 1, &maskr, &maskw, NULL, &tv);
   done = 0;
-  cnt->last_recv = 0;
   if (retval > 0 && check_clients(&maskr, &maskw, &retval))
     done += 4;
   if (retval > 0 && check_tmp(&cnt->newclient, &maskr, &maskw, &retval))
@@ -116,7 +106,7 @@ int			check_select(Uint32 timeout)
 }
 
 #else // qqn a un mac?
-int			my_select(t_connections *cnt, Uint32 timeout)
+int			check_select(Uint32 timeout)
 {
   return (0);
 }

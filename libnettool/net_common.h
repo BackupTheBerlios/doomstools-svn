@@ -61,29 +61,40 @@ typedef struct		s_client
   t_trame		recv[NET_MAX_MSG];
   t_trame		send[NET_MAX_MSG];
   TCPsocket		sock;
+  unsigned short	authorized;
   unsigned long		loss;
+  void			*data; // le no du player associe' par exemple.
 }			t_client;
 
 typedef struct		s_tmp
 {
   int			state;
-  t_client		c;
+  t_client		*c;
   struct s_tmp		*next;
 }			t_tmp;
 
 extern struct s_connections	*cnt;
 
 /*
+** assign.c
+*/
+void	assign_newclient(void (*f)(t_client *c, const t_trame *t, void *d),
+			 void *d);
+void	assign_deadclient(void (*f)(t_client *c, const t_trame *t, void *d),
+			  void *d);
+void	assign_clients(void (*f)(t_client *c, const t_trame *t, void *d),
+		       void *d);
+
+/*
 ** recv.c
 */
 int		my_recv(TCPsocket sock, void *data, int maxlen);
 Uint32		get_msg(struct s_client *client);
-
-#ifdef WIN32
-int LIBNETTOOL_API exec_msg(struct s_client *client, struct s_trame *t);
-#else
-int		exec_msg(struct s_client *client, struct s_trame *t);
-#endif
+const t_trame	*_get_trame(t_client *client);
+// OLDVERSION:
+/* int		exec_msg(struct s_client *client, struct s_trame *t); */
+// NEWONE:
+const t_trame	*exec_msg(struct s_client *client);
 
 /*
 ** send.c
@@ -91,13 +102,9 @@ int		exec_msg(struct s_client *client, struct s_trame *t);
 int		my_send(TCPsocket sock, void *datap, int len);
 int		put_msg(struct s_client *client);
 
-#ifdef WIN32
-int		LIBNETTOOL_API stock_msg(struct s_client *client, short tag,
-			  unsigned int len, void *msg);
-#else
 int		stock_msg(struct s_client *client, short tag,
 			  unsigned int len, void *msg);
-#endif
+int		stock_remote_msg(short tag, unsigned int len, void *msg);
 
 /*
 ** list.c
@@ -112,43 +119,68 @@ void		put_in_client(struct s_tmp **begin, TCPsocket sock, int state);
 */
 int		check_tmp(struct s_tmp **newtmp, fd_set *maskr,
 			  fd_set *maskw, int *res);
-int		manage_client(struct s_client **client, fd_set *maskr,
+int		manage_client(struct s_client *client, fd_set *maskr,
 			      fd_set *maskw, int *res);
 int		check_clients(fd_set *maskr, fd_set *maskw, int *res);
 int		check_server(fd_set *maskr, fd_set *maskw, int *res);
 
 /*
-** old.c // deprecated
+** close_connection.c
 */
-int		is_valid_trame(t_trame *t, short tag);
-void		send_trame(t_client *clt, t_trame *tlv);
-int		recv_trame(t_client *client, t_trame *trame);
-int		receive_one_request(t_trame *req);
-int		recv_client_req(t_client *client, t_trame *req);
+void		close_client_connection(t_client *client);
+void		close_connection();
+void		close_server_connection();
+
 /*
 ** solo
 */
-#ifdef WIN32
-int		LIBNETTOOL_API msg_wait(struct s_client *client);
-int		LIBNETTOOL_API check_select(Uint32 timeout);
-int		LIBNETTOOL_API init_connection(int port);
-int		LIBNETTOOL_API init_connection(char *ip, int port);
-void		LIBNETTOOL_API close_connection();
-void		LIBNETTOOL_API drop_client(struct s_client *clt);
-#else
 int		msg_wait(struct s_client *client);
 int		check_select(Uint32 timeout);
-int		init_connection(int port);
+int		init_server_connection(int port);
 int		init_connection(char *ip, int port);
-void		close_connection();
 void		drop_client(struct s_client *clt);
-#endif
+void		init_nettool();
+void		nettool_quit();
 
-void		move_last_player(int no);
+void		move_last_client(int no);
 int		loss_client(struct s_client *c);
-void		free_client(struct s_client *c);
+void		free_client_data(struct s_client *c);
+void		delete_client(struct s_client *c);
 void		init_msg(struct s_trame *msg);
 void		init_client(struct s_client *client);
 void		add_client();
 int		new_client(struct s_tmp **newtmp);
+void		authorize_client(t_client *c);
+void		insert_client(t_client *c);
+t_client	*create_client();
+void		set_data_client(t_client *c, void *p);
+
+/*
+** some shit
+*/
+void		*_net_xmalloc(size_t len);
+void		*_net_xrealloc(void *ptr, size_t len);
+void            _net_my_free_ptr_ptr(char **p);
+void		_net_xfree(void *p);
+
+/*
+** call_handler.c
+*/
+void		call_clienthandler(t_client *client,
+				   const t_trame *trame);
+void		call_deadhandler(t_client *client,
+				 const t_trame *trame);
+void		call_newhandler(t_client *client,
+				const t_trame *trame);
+
+
+/*
+** old.c
+*/
+int			is_valid_trame(t_trame *t, short tag);
+void			send_trame(t_client *clt, t_trame *tlv);
+/* int			recv_trame(t_client *client, t_trame *trame); */
+/* int			receive_one_request(t_trame *req); */
+/* int			recv_client_req(t_client *client, t_trame *req); */
+
 #endif

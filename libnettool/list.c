@@ -34,7 +34,7 @@ void	free_list_client(t_tmp *newclt)
   while (newclt)
     {
       next = newclt->next;
-      free(newclt);
+      _net_xfree(newclt);
       newclt = next;
     }
 }
@@ -51,10 +51,10 @@ t_tmp	*del_in_list(t_tmp *newclt, t_client *c)
   prev = 0;
   while (newclt)
     {
-      if (&newclt->c == c)
+      if (newclt->c == c)
 	{
 	  next = newclt->next;
-	  free(newclt);
+	  _net_xfree(newclt);
 	  if (!prev)
 	    return (next);
 	  prev->next = next;
@@ -70,8 +70,8 @@ void	put_in_tmp_client(t_tmp **begin, t_client *c)
 {
   t_tmp	*newclt;
 
-  newclt = (t_tmp*)xmalloc(sizeof(*newclt));
-  memcpy(&newclt->c, c, sizeof(newclt->c));
+  newclt = (t_tmp*)_net_xmalloc(sizeof(*newclt));
+  newclt->c = c;
   newclt->state = c->loss;
   c->loss = 0;
   newclt->next = *begin;
@@ -82,9 +82,10 @@ void	put_in_client(t_tmp **begin, TCPsocket sock, int state)
 {
   t_tmp	*newclt;
 
-  newclt = (t_tmp*)xmalloc(sizeof(*newclt));
-  init_client(&newclt->c);
-  newclt->c.sock = sock;
+  newclt = (t_tmp*)_net_xmalloc(sizeof(*newclt));
+  newclt->c = create_client();
+  init_client(newclt->c);
+  newclt->c->sock = sock;
   newclt->state = state;
   newclt->next = *begin;
   *begin = newclt;

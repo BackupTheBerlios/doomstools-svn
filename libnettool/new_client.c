@@ -38,7 +38,7 @@ int		new_client(t_tmp **newclt)
   else
     {
       put_in_client(newclt, newsock, STATE_NEW);
-      stock_msg(&((*newclt)->c), TAG_WELCOME, 0, NULL);
+      call_newhandler((*newclt)->c, NULL);
       return (1);
     }
   return (0);

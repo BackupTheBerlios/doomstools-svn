@@ -16,30 +16,39 @@
 // along with libnettool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 /*
-** init_client.c for network engine in /u/ept2/huot_j/network_engine
+** loss_client.c for network engine in /u/ept2/huot_j/network_engine
 ** 
 ** Made by jonathan huot
 ** Login   <huot_j@epita.fr>
 ** 
-** Started on  Tue Jun 22 18:18:56 2004 jonathan huot
-** Last update Tue Jun 22 18:19:11 2004 jonathan huot
+** Started on  Wed Jun 23 14:51:21 2004 jonathan huot
+// Last update Tue Jun 29 20:02:37 2004 jonathan huot
 */
 
 #include "libnettool.h"
 
-void		init_client(t_client *client)
+int		loss_client(t_client *c)
 {
   int		i;
 
-  client->pos_recv = 0;
-  client->pos_exec = 0;
-  client->pos_send = 0;
-  client->pos_stock = 0;
-  for (i = 0; i < NET_MAX_MSG; i++)
+  for (i = 0; cnt->clients[i]; i++)
+    if (cnt->clients[i] == c)
+      break;
+  if (!cnt->clients[i])
+    return (0);
+  if (cnt->clients[i]->loss == STATE_DROP)
     {
-      init_msg(&(client->recv[i]));
-      init_msg(&(client->send[i]));
+      SDLNet_TCP_Close(cnt->clients[i]->sock);
+      delete_client(cnt->clients[i]);
     }
-  client->sock = 0;
-  client->loss = 0;
+  else if (cnt->clients[i]->loss == STATE_DEAD ||
+	   cnt->clients[i]->loss == STATE_FAIL_RECV)
+    {
+      put_in_tmp_client(&cnt->deadclient, cnt->clients[i]);
+      call_deadhandler(cnt->deadclient->c, NULL);
+    }
+  else
+    fprintf(stderr, "warning: unknown state (%d)\n", cnt->clients[i]->loss);
+  move_last_client(i);
+  return (1);
 }

@@ -31,7 +31,6 @@
 
 # endif // WIN32
 
-# include "libstdtool.h"
 # include "network.h"
 
 #endif // _LIBNETTOOL_H_

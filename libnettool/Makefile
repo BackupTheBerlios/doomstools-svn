@@ -1,14 +1,20 @@
 NAME	=	nettool
-SRCS	=	lib$(NAME).cpp check_select.cpp check_sockets.cpp\
-		close_connection.cpp free_net.cpp init_client.cpp\
-		init_msg.cpp list.cpp loss_client.cpp move_last_player.cpp\
-		msg_wait.cpp new_client.cpp old.cpp recv.cpp send.cpp
-OBJS	=	$(SRCS:.cpp=.o)
+SRCS	=	lib$(NAME).c check_select.c check_sockets.c\
+		close_connection.c free_net.c init_client.c\
+		init_msg.c init_nettool.c list.c loss_client.c\
+		move_last_client.c msg_wait.c new_client.c\
+		recv.c send.c init_connection.c authorize_client.c\
+		assign.c netxstd.c old.c nettool_quit.c insert_client.c\
+		delete_client.c create_client.c call_handler.c\
+		set_data_client.c
+OBJS	=	$(SRCS:.c=.o)
+
 CC	=	g++
-CXXFLAGS=	-Wall
+CFLAGS	=	-Wall -g3 `sdl-config --cflags`
 
 $(NAME)	:	$(OBJS)
-		$(CC) -o lib$(NAME).so -shared $(OBJS)
+		ar r lib$(NAME).a $(OBJS)
+		ranlib lib$(NAME).a
 all	:	$(NAME)
 
 clean	:	

@@ -54,14 +54,14 @@ int		get_full_msg(t_client *client, char *msg,
   int		len;
   int		more;
   int		tmp;
-  bool		thisone;
+  short		thisone;
 
   more = NET_MSS;
   len = 0;
   while (more > 0 && (first != client->pos_send || !len) &&
 	 TAG_SEND(client) >= 0)
     {
-      thisone = false;
+      thisone = 0;
       tmp = sizeof(TAG_SEND(client)) + sizeof(LEN_SEND(client)) -
 	POS_SEND(client);
       if (tmp > 0)
@@ -79,7 +79,7 @@ int		get_full_msg(t_client *client, char *msg,
 	      more -= tmp;
 	      len += tmp;
 		  msg += tmp;
-	      thisone = true;
+	      thisone = 1;
 	    }
 	}
       if (LEN_SEND(client) > 0)
@@ -88,7 +88,7 @@ int		get_full_msg(t_client *client, char *msg,
 	  if (tmp >= more)
 	    {
 	      memcpy(msg, MSG_SEND(client) +
-		     ((thisone == false) ?
+		     ((thisone == 0) ?
 		      (POS_SEND(client) - sizeof(TAG_SEND(client)) -
 		       sizeof(LEN_SEND(client))) : (0)), more);
 	      len += more;
@@ -176,23 +176,9 @@ int		put_msg(t_client *client)
   unsigned int	first;
 
    if (!msg)
-     msg = (char*)xmalloc(sizeof(*msg) * NET_MSS);
+     msg = (char*)_net_xmalloc(sizeof(*msg) * NET_MSS);
    first = client->pos_send;
    len = get_full_msg(client, msg, first);
-//  if (TAG_SEND(client) >= 0)
-//    {
-//      if (POS_SEND(client) < sizeof(TAG_SEND(client)) +
-// 	 sizeof(LEN_SEND(client)))
-// 	result = my_send(client->sock, &TAG_SEND(client) + POS_SEND(client),
-// 			 sizeof(TAG_SEND(client)) + sizeof(LEN_SEND(client)));
-//      else
-// 	result = my_send(client->sock, MSG_SEND(client) + POS_SEND(client) -
-// 			 sizeof(TAG_SEND(client)) - sizeof(LEN_SEND(client)),
-// 			 (sizeof(*MSG_SEND(client)) * LEN_SEND(client)) -
-// 			 POS_SEND(client) +
-// 			 sizeof(TAG_SEND(client)) +
-// 			 sizeof(LEN_SEND(client)));
-//    }
    result = my_send(client->sock, msg, len);
    if (result <= 0)
      {
@@ -203,17 +189,6 @@ int		put_msg(t_client *client)
        return (0);
      }
    update_sent_msg(client, len, result, first);
-//  POS_SEND(client) += result;
-//  if (POS_SEND(client) >= sizeof(TAG_SEND(client)) +
-//      sizeof(LEN_SEND(client)) + (sizeof(*MSG_SEND(client)) *
-// 				  LEN_SEND(client)))
-//    {
-//      if (MSG_SEND(client))
-// 	free(MSG_SEND(client));
-//      init_msg(&client->send[client->pos_send]);
-//      if (++client->pos_send >= NET_MAX_MSG)
-// 	client->pos_send = 0;
-//    }
   return (result);
 }
 
@@ -230,7 +205,31 @@ int		stock_msg(t_client *client, short tag,
   POS_STOCK(client) = 0;
   if (len)
     {
-      MSG_STOCK(client) = (char*)xmalloc(sizeof(*MSG_STOCK(client)) * len);
+      MSG_STOCK(client) = (char*)_net_xmalloc(sizeof(*MSG_STOCK(client)) * len);
+      memcpy(MSG_STOCK(client), msg, len);
+    }
+  else
+    MSG_STOCK(client) = 0;
+  if (++client->pos_stock >= NET_MAX_MSG)
+    client->pos_stock = 0;
+  return (1);
+}
+
+int		stock_remote_msg(short tag, unsigned int len, void *msg)
+{
+  t_client	*client = cnt->clients[0];
+
+  if (client->pos_stock == client->pos_send && TAG_SEND(client) >= 0)
+    {
+      fprintf(stderr, "WARNING: Too much request, skipping\n");
+      return (0);
+    }
+  TAG_STOCK(client) = tag;
+  LEN_STOCK(client) = len;
+  POS_STOCK(client) = 0;
+  if (len)
+    {
+      MSG_STOCK(client) = (char*)_net_xmalloc(sizeof(*MSG_STOCK(client)) * len);
       memcpy(MSG_STOCK(client), msg, len);
     }
   else
