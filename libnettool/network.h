@@ -31,7 +31,11 @@
 #define NETWORK_DEBUG
 
 #ifdef NETWORK_DEBUG
-#define NETDEBUG(x) ({printf(x);fflush(stdout);})
+# ifndef WIN32
+# define NETDEBUG(x) ({printf(x);fflush(stdout);})
+# else
+# define NETDEBUG(x) (printf(x))
+# endif
 #else
 #define NETDEBUG(x)
 #endif

@@ -1,0 +1,5 @@
+bug: quand dans un handler on supprime un client autre que celui du handler..
+
+consequence: on met client->state = DROP, mais rien ne le met dans le deadlist, ni quoi que ce soit.
+
+faut voir de modifier close_client_connection (mettre directos dans deadlist), mais faut faire gaffe aux consequences (si c'est celui du handler par ex.)

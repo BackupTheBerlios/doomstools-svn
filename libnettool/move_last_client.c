@@ -20,7 +20,7 @@
 
 void		move_last_client(unsigned int no)
 {
-  int		last;
+  unsigned int		last;
 
   for (last = 0; cnt->clients[last]; last++)
     ;

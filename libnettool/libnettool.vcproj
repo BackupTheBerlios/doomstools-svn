@@ -14,7 +14,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
-			ConfigurationType="2"
+			ConfigurationType="4"
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
@@ -33,16 +33,8 @@
 			<Tool
 				Name="VCCustomBuildTool"/>
 			<Tool
-				Name="VCLinkerTool"
-				AdditionalOptions="libstdtool.lib SDL_net.lib SDL.lib wsock32.lib"
-				OutputFile="/projs/lib/libnettool.dll"
-				LinkIncremental="2"
-				AdditionalLibraryDirectories="D:\projs\lib"
-				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="$(OutDir)/libnettool.pdb"
-				SubSystem="2"
-				ImportLibrary="$(OutDir)/libnettool.lib"
-				TargetMachine="1"/>
+				Name="VCLibrarianTool"
+				OutputFile="/projs/lib/$(ProjectName).lib"/>
 			<Tool
 				Name="VCMIDLTool"/>
 			<Tool
@@ -57,8 +49,6 @@
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
 				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
 			<Tool
 				Name="VCManagedWrapperGeneratorTool"/>
 			<Tool
@@ -120,52 +110,91 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
 			<File
-				RelativePath=".\check_select.cpp">
+				RelativePath=".\assign.c">
 			</File>
 			<File
-				RelativePath=".\check_sockets.cpp">
+				RelativePath=".\authorize_client.c">
 			</File>
 			<File
-				RelativePath=".\close_connection.cpp">
+				RelativePath=".\call_handler.c">
 			</File>
 			<File
-				RelativePath=".\free_net.cpp">
+				RelativePath=".\check_select.c">
 			</File>
 			<File
-				RelativePath=".\init_client.cpp">
+				RelativePath=".\check_sockets.c">
 			</File>
 			<File
-				RelativePath=".\init_connection.cpp">
+				RelativePath=".\close_connection.c">
 			</File>
 			<File
-				RelativePath=".\init_msg.cpp">
+				RelativePath=".\close_socket.c">
 			</File>
 			<File
-				RelativePath=".\libnettool.cpp">
+				RelativePath=".\create_client.c">
 			</File>
 			<File
-				RelativePath=".\list.cpp">
+				RelativePath=".\delete_client.c">
 			</File>
 			<File
-				RelativePath=".\loss_client.cpp">
+				RelativePath=".\free_net.c">
 			</File>
 			<File
-				RelativePath=".\move_last_player.cpp">
+				RelativePath=".\init_client.c">
 			</File>
 			<File
-				RelativePath=".\msg_wait.cpp">
+				RelativePath=".\init_connection.c">
 			</File>
 			<File
-				RelativePath=".\new_client.cpp">
+				RelativePath=".\init_msg.c">
 			</File>
 			<File
-				RelativePath=".\old.cpp">
+				RelativePath=".\init_nettool.c">
 			</File>
 			<File
-				RelativePath=".\recv.cpp">
+				RelativePath=".\insert_client.c">
 			</File>
 			<File
-				RelativePath=".\send.cpp">
+				RelativePath=".\is_quitting.c">
+			</File>
+			<File
+				RelativePath=".\libnettool.c">
+			</File>
+			<File
+				RelativePath=".\list.c">
+			</File>
+			<File
+				RelativePath=".\loss_client.c">
+			</File>
+			<File
+				RelativePath=".\move_last_client.c">
+			</File>
+			<File
+				RelativePath=".\msg_wait.c">
+			</File>
+			<File
+				RelativePath=".\nettool_quit.c">
+			</File>
+			<File
+				RelativePath=".\netxstd.c">
+			</File>
+			<File
+				RelativePath=".\new_client.c">
+			</File>
+			<File
+				RelativePath=".\no_more.c">
+			</File>
+			<File
+				RelativePath=".\old.c">
+			</File>
+			<File
+				RelativePath=".\recv.c">
+			</File>
+			<File
+				RelativePath=".\send.c">
+			</File>
+			<File
+				RelativePath=".\set_data_client.c">
 			</File>
 		</Filter>
 		<Filter
