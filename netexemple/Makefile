@@ -16,6 +16,8 @@ $(NAME)	:	$(OBJS)
 		$(CC) -o $(NAME) $(OBJS) $(LIBS)
 all	:	$(NAME)
 
+leaks	:	
+		$(CC) -o memoryleaks memoryleaaaks.cpp $(LIBS) $(CFLAGS)
 clean	:
 		$(RM) $(OBJS) *~
 fclean	:	clean

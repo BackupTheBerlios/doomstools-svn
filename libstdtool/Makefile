@@ -1,7 +1,7 @@
 NAME	=	stdtool
-SRCS	=	lib$(NAME).cpp
-OBJS	=	$(SRCS:.cpp=.o)
-CC	=	g++
+SRCS	=	lib$(NAME).c
+OBJS	=	$(SRCS:.c=.o)
+CC	=	gcc
 CXXFLAGS=	-Wall
 
 $(NAME)	:	$(OBJS)
