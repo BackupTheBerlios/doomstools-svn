@@ -179,7 +179,7 @@ int		put_msg(t_client *client)
     if (!(msg = (char*)malloc(sizeof(*msg) * NET_MSS)))
       {
 	fprintf(stderr, "Not enough memory\n");
-	exit(42);
+	exit(-1);
       }
   first = client->pos_send;
   len = get_full_msg(client, msg, first);
@@ -187,8 +187,8 @@ int		put_msg(t_client *client)
   if (result <= 0)
     {
       NETDEBUG(SDLNet_GetError());
-      client->state = STATE_DROP;
-      fprintf(stderr, "STATE_FAIL_RECV ! (%d, %s)\n", result, strerror(errno));
+      client->state = STATE_FAIL_SEND;
+      fprintf(stderr, "STATE_FAIL_SEND ! (%d, %s)\n", result, strerror(errno));
       // met dans list deadclient, avec un etat 'drop'
       return (0);
     }

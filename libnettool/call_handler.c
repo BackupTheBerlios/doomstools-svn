@@ -43,3 +43,19 @@ void		call_clienthandler(t_client *client,
   else
     fprintf(stderr, "warning: no ptr func for clients\n"); 
 }
+
+void		call_handler(t_client *c,
+				const t_trame *t)
+{
+  NETDEBUG("ready to call handler\n");
+  if (c->state)
+    {
+      if (c->state != STATE_DROP)
+	call_deadhandler(c, t);
+    }
+  else if (c->authorized)
+    call_clienthandler(c, t);
+  else
+    call_newhandler(c, t);
+  NETDEBUG("handler called\n");
+}

@@ -15,15 +15,6 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with libnettool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-/*
-** close_connection.c for network engine in /u/ept2/huot_j/network_engine
-** 
-** Made by jonathan huot
-** Login   <huot_j@epita.fr>
-** 
-** Started on  Wed Jun 23 14:55:12 2004 jonathan huot
-** Last update Wed Jun 23 15:03:20 2004 jonathan huot
-*/
 
 #include "libnettool.h"
 
@@ -54,15 +45,8 @@ void		close_server_connection()
 
 void		close_client_connection(t_client *client)
 {
-  int		i;
-
-  if (!client)
+  if (!client || no_more(client))
     return;
-  close_socket(&client->sock);
-  cnt->newclient = del_in_list(cnt->newclient, client);
-  cnt->deadclient = del_in_list(cnt->deadclient, client);
-  for (i = 0; cnt->clients[i]; i++)
-    if (cnt->clients[i] == client)
-      move_last_client(i);
+  loss_client(client);
   client->state = STATE_DROP;
 }

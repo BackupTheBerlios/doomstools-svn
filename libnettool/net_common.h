@@ -30,9 +30,9 @@
 #endif
 
 #define STATE_NEW		(0)
-#define STATE_DEAD		(1)
-#define STATE_DROP		(2)
-#define STATE_FAIL_RECV		(3) // ca arrive quand il s'est deconnecté
+#define STATE_FAIL_RECV		(1)
+#define STATE_FAIL_SEND		(2)
+#define STATE_DROP		(3)
 
 typedef TCPsocket	t_socket;
 
@@ -118,8 +118,6 @@ void		put_in_client(struct s_tmp **begin, TCPsocket sock, int state);
 /*
 ** check_sockets.c
 */
-int		check_tmp(struct s_tmp **newtmp, fd_set *maskr,
-			  fd_set *maskw, int *res);
 int		manage_client(struct s_client *client, fd_set *maskr,
 			      fd_set *maskw, int *res);
 int		check_clients(fd_set *maskr, fd_set *maskw, int *res);
@@ -143,7 +141,7 @@ int		init_connection(char *ip, int port);
 void		drop_client(struct s_client *clt);
 void		init_nettool();
 void		nettool_quit();
-void		move_last_client(int no);
+void		move_last_client(unsigned int no);
 void		free_client_data(struct s_client *c);
 void		delete_client(struct s_client *c);
 void		init_msg(struct s_trame *msg);
@@ -154,6 +152,8 @@ void		authorize_client(t_client *c);
 void		insert_client(t_client *c);
 t_client	*create_client();
 void		set_data_client(t_client *c, void *p);
+int		is_quitting(t_client *c);
+int		no_more(t_client *c);
 
 /*
 ** some shit
@@ -172,12 +172,14 @@ void		call_deadhandler(t_client *client,
 				 const t_trame *trame);
 void		call_newhandler(t_client *client,
 				const t_trame *trame);
+void		call_handler(t_client *client,
+			     const t_trame *trame);
 /*
 ** loss_client
 */
-void		loss_tmp_client(struct s_client *c);
-int		loss_client(struct s_client *c);
-
+void		del_from_tmp(struct s_client *c);
+void		del_from_clients(struct s_client *c);
+void		loss_client(struct s_client *c);
 /*
 ** close_socket.c
 */

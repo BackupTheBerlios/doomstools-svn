@@ -15,15 +15,6 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with libnettool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-/*
-** init_client.c for network engine in /u/ept2/huot_j/network_engine
-** 
-** Made by jonathan huot
-** Login   <huot_j@epita.fr>
-** 
-** Started on  Tue Jun 22 18:18:56 2004 jonathan huot
-** Last update Tue Jun 22 18:19:11 2004 jonathan huot
-*/
 
 #include "libnettool.h"
 

@@ -15,17 +15,29 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with libnettool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-/*
-** check_sockets.c for zappy in /u/ept2/huot_j
-** 
-** Made by jonathan huot
-** Login   <huot_j@epita.fr>
-** 
-** Started on  Tue May 25 13:08:39 2004 jonathan huot
-// Last update Tue Jun 29 18:03:45 2004 jonathan huot
-*/
 
 #include "libnettool.h"
+
+void		check_dead()
+{
+  t_tmp		*list;
+  t_tmp		*next;
+
+  printf("beffore\n");fflush(stdout);
+  for (list = cnt->deadclient; list; list = next)
+    {
+      printf("durinnnng\n");fflush(stdout);
+      next = list->next;
+      call_handler(list->c, NULL);
+      printf("duriinnnng2\n");fflush(stdout);
+      delete_client(list->c);
+      printf("during2.4\n");fflush(stdout);
+      _net_xfree(list);
+      printf("during3\n");fflush(stdout); 
+   }
+  printf("beffore after\n");fflush(stdout);
+  cnt->deadclient = NULL;
+}
 
 int		manage_client(t_client *client, fd_set *maskr, fd_set *maskw,
 			      int *res)
@@ -47,100 +59,78 @@ int		manage_client(t_client *client, fd_set *maskr, fd_set *maskw,
   return (0);
 }
 
-void		check_dead()
+int		check_client(fd_set *maskr, fd_set *maskw,
+			     int *res, t_client *client)
 {
-  t_tmp		*list;
-  t_tmp		*next;
-
-  for (list = cnt->deadclient; list; list = next)
-    {
-      next = list->next;
-      call_deadhandler(list->c, NULL);
-      delete_client(list->c);
-      _net_xfree(list);
-    }
-  cnt->deadclient = NULL;
-}
-
-int		check_tmp(t_tmp **newclt, fd_set *maskr, fd_set *maskw,
-			  int *res)
-{
-  t_tmp		*list;
-  t_tmp		*next;
-  int		flg;
   int		ret;
 
-  flg = 0;
-  for (list = *newclt; *res > 0 && list; list = next)
+  if (is_quitting(client) ||
+      (ret = manage_client(client, maskr, maskw, res)) < 0)
     {
-      next = list->next;
-      if ((ret = manage_client(list->c, maskr, maskw, res)) < 0)
-	loss_tmp_client(list->c);
-      if (ret == 1)
+      if (client->state != STATE_DROP)
+	loss_client(client);
+      return (-1);
+    }
+  else if (ret == 1)
+    {
+      const t_trame	*trame;
+      
+      while ((trame = exec_msg(client)))
 	{
-	  const t_trame	*trame;
-	  t_client	*clt;
-
-	  // obligatoirement dans newlist
-	  flg = 1;
-	  clt = list->c;
-	  while ((trame = exec_msg(clt)))
+	  call_handler(client, trame);
+	  if (is_quitting(client))
 	    {
-	      if (!clt->authorized)
-		call_newhandler(clt, trame);
-	      else
-		call_clienthandler(clt, trame);
-	      if (clt->state == STATE_DROP)
-		break;
+	      if (client->state != STATE_DROP)
+		loss_client(client);
+	      return (-1);
 	    }
 	}
-      if (*res <= 0)
-	return (flg);
-      list = next;
+      return (1);
     }
-  return (flg);
+  return (0);
 }
 
 int		check_clients(fd_set *maskr, fd_set *maskw, int *res)
 {
+  t_tmp		*list;
+  t_tmp		*next;
   int		i;
   int		ret;
   int		flg;
 
   flg = 0;
+  // list des clients régularisés
   for (i = 0; *res > 0 && cnt->clients[i]; i++)
     {
-      if ((ret = manage_client(cnt->clients[i], maskr, maskw, res)) < 0)
-	loss_client(cnt->clients[i--]);
-      if (ret == 1)
-	{
-	  const t_trame	*trame;
-	  t_client	*tmp;
-
-	  flg = 1;
-	  tmp = cnt->clients[i];
-	  while ((trame = exec_msg(tmp)))
-	    {
-	      call_clienthandler(tmp, trame);
-	      if (tmp->state == STATE_DROP)
-		break;
-	    }
-	}
-      if (*res <= 0)
-	return (flg);
+      if ((ret = check_client(maskr, maskw, res, cnt->clients[i])))
+	flg = 1;
+      else if (ret < 0)
+	i--;
+    }
+  // list des "new" clients
+  for (list = cnt->newclient; *res > 0 && list; list = next)
+    {
+      next = list->next;
+      if (check_client(maskr, maskw, res, list->c))
+	flg = 1;
+      list = next;
     }
   return (flg);
 }
 
 int		check_server(fd_set *maskr, fd_set *maskw, int *res)
 {
+  printf("bifton\n");fflush(stdout);
   if (cnt->server.sock)
     if (*res > 0 && FD_ISSET(cnt->server.sock->channel, maskr))
       {
+	printf("bifton2\n");fflush(stdout);
 	(*res)--;
 	if (new_client(&cnt->newclient))
 	  ;
+	printf("bifton3\n");fflush(stdout);
 	return (1);
       }
+  printf("bifton4\n");fflush(stdout);
   return (0);
 }

@@ -38,7 +38,7 @@ int		new_client(t_tmp **newclt)
   else
     {
       put_in_client(newclt, newsock, STATE_NEW);
-      call_newhandler((*newclt)->c, NULL);
+      call_handler((*newclt)->c, NULL);
       return (1);
     }
   return (0);

@@ -15,15 +15,6 @@
 // You should have received a copy of the GNU Lesser Public License
 // along with libnettool; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-/*
-** list.c for zappy in /u/ept2/huot_j
-** 
-** Made by jonathan huot
-** Login   <huot_j@epita.fr>
-** 
-** Started on  Tue May 25 13:29:21 2004 jonathan huot
-** Last update Wed Jun 23 15:39:04 2004 jonathan huot
-*/
 
 #include "libnettool.h"
 
@@ -83,11 +74,12 @@ void	put_in_client(t_tmp **begin, TCPsocket sock, int state)
 {
   t_tmp	*newclt;
 
+  NETDEBUG("client ready to put\n");
   newclt = (t_tmp*)_net_xmalloc(sizeof(*newclt));
   newclt->c = create_client();
-  init_client(newclt->c);
   newclt->c->sock = sock;
   newclt->c->state = state;
   newclt->next = *begin;
   *begin = newclt;
+  NETDEBUG("client put\n");
 }

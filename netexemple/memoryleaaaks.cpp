@@ -1,4 +1,6 @@
 #include "libnettool.h"
+#include <stdio.h>
+#include <string.h>
 
 // define tag communication:
 enum
@@ -10,7 +12,7 @@ enum
 
 #define MAXSELECT ((unsigned int)-1)
 #define PORT (4203)
-#define MAX_PLAYERS (1)
+#define MAX_PLAYERS (42)
 
 t_client	**players = NULL;
 int		nb_player = 0;
@@ -24,21 +26,26 @@ void	process_drop(t_client *c, const t_trame *T,
 void	process_newclient(t_client *c, const t_trame *t,
 			  void *data)
 {
-  printf("process new\n");
+  printf("process new %d\n", (int)c);fflush(stdout);
   if (!t)
-    printf("very begininng\n");
+    {printf("very begininng\n");fflush(stdout);}
   else if (is_valid_trame((t_trame*)t, WELCOME))
     {
       if (!nb_player)
+      {
 	players = (t_client**)malloc(sizeof(*players) * MAX_PLAYERS);
-
+      	for (int i = 0; i < MAX_PLAYERS; i++)
+        	players[i] = NULL;
+	}
       if (nb_player >= MAX_PLAYERS)
-	{
 	  nb_player = 0;
+
+      if (players[nb_player])
+      {
 	  printf("CLOSE ONE %d\n", (int)players[nb_player]);
 	  close_client_connection(players[nb_player]);
-	  printf("CLOSE ONE\n");
-	}
+	  printf("CLOSED %d\n", players[nb_player]->state);fflush(stdout);
+      }
 
       // change status of client
       authorize_client(c);
@@ -48,7 +55,7 @@ void	process_newclient(t_client *c, const t_trame *t,
       set_data_client(c, (void*)&players[nb_player]); // for receving msg
 
       nb_player++;
-      printf("one client say welcome\n");
+      printf("client %d say welcome\n", c);fflush(stdout);
     }
   else
     printf("ERROR: got %d\n", t->tag);
@@ -57,19 +64,19 @@ void	process_newclient(t_client *c, const t_trame *t,
 void	process_deadclient(t_client *c, const t_trame *t,
 			   void *data)
 {
-  printf("process dead\n");
+  printf("process dead %d\n", (int)c);fflush(stdout);
 }
 
 void	process_clients(t_client *c, const t_trame *t,
 			void *data)
 {
-  printf("process clients\n");
+  printf("process clients %d\n", (int)c);fflush(stdout);
   if (is_valid_trame((t_trame*)t, HELLOWORLD))
-    printf("one client say HELLOWORLD\n");
+    {printf("one client say HELLOWORLD\n");fflush(stdout);}
   else if (is_valid_trame((t_trame*)t, EXIT))
-    printf("one client say quit!\n");
+    {printf("one client say quit!\n");fflush(stdout);}
   else
-    printf("ERROR: got %d\n", t->tag);
+    {printf("ERROR: got %d\n", t->tag);fflush(stdout);}
 }
 
 int	main(int ac, char **av)
@@ -78,6 +85,7 @@ int	main(int ac, char **av)
   init_nettool();
   if (ac > 1) // server mode
     {
+
       // set handlers
       assign_newclient(process_newclient, NULL);
       assign_deadclient(process_deadclient, NULL);
@@ -103,28 +111,28 @@ int	main(int ac, char **av)
 
       assign_deadclient(process_drop, NULL);
 
-      printf("step 1\n"); fflush(stdout);
+      printf("step 1\n");fflush(stdout); fflush(stdout);
       // stock messages to send
       stock_remote_msg(WELCOME, strlen("tata"), (void*)"tata");
-      printf("step 2\n"); fflush(stdout);
+      printf("step 2\n");fflush(stdout); fflush(stdout);
       stock_remote_msg(HELLOWORLD, 0, NULL);
-      printf("step 3\n"); fflush(stdout);
+      printf("step 3\n");fflush(stdout); fflush(stdout);
       stock_remote_msg(HELLOWORLD, 0, NULL);
-      printf("step 4\n"); fflush(stdout);
+      printf("step 4\n");fflush(stdout); fflush(stdout);
       stock_remote_msg(HELLOWORLD, 0, NULL);
-      printf("step 5\n"); fflush(stdout);
+      printf("step 5\n");fflush(stdout); fflush(stdout);
       stock_remote_msg(HELLOWORLD, 0, NULL);
-      printf("step 5\n"); fflush(stdout);
+      printf("step 5\n");fflush(stdout); fflush(stdout);
 
-      printf("step 7\n"); fflush(stdout);
+      printf("step 7\n");fflush(stdout); fflush(stdout);
       // send messages
       while (1)
 	check_select(MAXSELECT);
 
-      printf("step 8\n"); fflush(stdout);
+      printf("step 8\n");fflush(stdout); fflush(stdout);
       // close connection
       close_connection();
-      printf("step 9\n"); fflush(stdout);
+      printf("step 9\n");fflush(stdout); fflush(stdout);
     }
   // free memory, and close connections
   nettool_quit();

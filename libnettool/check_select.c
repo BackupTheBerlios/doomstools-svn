@@ -70,22 +70,24 @@ int			check_select(Uint32 timeout)
   fd_set		maskw;
   int			done;
 
+  check_dead();
+  printf("Rtiti\n");fflush(stdout);
   FD_ZERO(&maskr);
   FD_ZERO(&maskw);
   maxfd = fill_fd(&maskr, &maskw);
+  printf("Ttiti\n");fflush(stdout);
   tv.tv_sec = timeout / 1000;
   tv.tv_usec = (timeout % 1000) * 1000;
+  printf("titi\n");fflush(stdout);
   retval = select((int)maxfd + 1, &maskr, &maskw, NULL, &tv);
+  printf("titi0\n");fflush(stdout);
   done = 0;
   if (retval > 0 && check_clients(&maskr, &maskw, &retval))
-    done += 4;
-  if (retval > 0 && check_tmp(&cnt->newclient, &maskr, &maskw, &retval))
     done += 1;
-  if (retval > 0 && check_tmp(&cnt->deadclient, &maskr, &maskw, &retval))
-    done += 2;
+  printf("titi2 (%d)\n", retval);fflush(stdout);
   if (retval > 0 && check_server(&maskr, &maskw, &retval))
     done += 8;
-  check_dead();
+  printf("titi 2.5\n");fflush(stdout);
 #ifdef NETWORK_DEBUG
   if (retval)
     {
@@ -96,6 +98,8 @@ int			check_select(Uint32 timeout)
       exit(-1);
     }
 #endif
+  check_dead();
+  printf("titi3\n");fflush(stdout);
   return (done);
 }
 

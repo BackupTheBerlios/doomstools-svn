@@ -19,8 +19,13 @@
 
 void		delete_client(t_client *c)
 {
+  printf("delete client %d\n", (int)c);fflush(stdout);
   close_socket(&c->sock);
+  printf("delete client2 %d\n", (int)c);fflush(stdout);
   cnt->allclients = del_in_list(cnt->allclients, c);
+  printf("delete client4 %d\n", (int)c);fflush(stdout);
   free_client_data(c);
+  printf("delete client6 %d\n", (int)c);fflush(stdout);
   _net_xfree(c);
+  write(1, "blabla\n", 7);
 }

@@ -18,6 +18,8 @@ all	:	$(NAME)
 
 leaks	:	
 		$(CC) -o memoryleaks memoryleaaaks.cpp $(LIBS) $(CFLAGS)
+flood	:	
+		$(CC) -o flood flood.cpp $(LIBS) $(CFLAGS)
 clean	:
 		$(RM) $(OBJS) *~
 fclean	:	clean

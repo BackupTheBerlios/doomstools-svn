@@ -18,18 +18,15 @@
 
 #include "libnettool.h"
 
-void		move_last_client(int no)
+void		move_last_client(unsigned int no)
 {
   int		last;
 
   for (last = 0; cnt->clients[last]; last++)
     ;
-  if (!last)
+  if (!last || no >= last)
     return;
   if (--last != no)
-    cnt->clients[last] = cnt->clients[no];
-  cnt->clients = (t_client**)_net_xrealloc(cnt->clients,
-					   sizeof(*cnt->clients)
-					   * (last + 1));
+   cnt->clients[no] = cnt->clients[last];
   cnt->clients[last] = NULL;
 }

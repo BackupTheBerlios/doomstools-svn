@@ -28,9 +28,10 @@
 #include "net_common.h"
 
 #define MALLOCDEBUG
+#define NETWORK_DEBUG
 
 #ifdef NETWORK_DEBUG
-#define NETDEBUG(x) (put_error(x))
+#define NETDEBUG(x) ({printf(x);fflush(stdout);})
 #else
 #define NETDEBUG(x)
 #endif

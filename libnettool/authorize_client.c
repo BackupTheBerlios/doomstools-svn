@@ -19,7 +19,7 @@
 
 void		authorize_client(t_client *c)
 {
-  if (!c->state)
+  if (c->state == STATE_NEW)
     {
       c->authorized = 1;
       insert_client(c);
