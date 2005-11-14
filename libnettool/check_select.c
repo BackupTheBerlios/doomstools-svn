@@ -99,6 +99,8 @@ int			check_select(Uint32 timeout)
 	  exit(-1);
 	}
       check_dead();
+      if (!timeout)
+	return (done);
       gettimeofday(&left, NULL);
       left.tv_sec -= before.tv_sec;
       left.tv_usec -= before.tv_usec;
