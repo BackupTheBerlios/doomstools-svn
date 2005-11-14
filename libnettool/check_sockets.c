@@ -23,19 +23,19 @@ void		check_dead()
   t_tmp		*list;
   t_tmp		*next;
 
-  printf("beffore\n");fflush(stdout);
+  //  printf("beffore\n");fflush(stdout);
   for (list = cnt->deadclient; list; list = next)
     {
-      printf("durinnnng\n");fflush(stdout);
+      //      printf("durinnnng\n");fflush(stdout);
       next = list->next;
       call_handler(list->c, NULL);
-      printf("duriinnnng2\n");fflush(stdout);
+      //      printf("duriinnnng2\n");fflush(stdout);
       delete_client(list->c);
-      printf("during2.4\n");fflush(stdout);
+      //      printf("during2.4\n");fflush(stdout);
       _net_xfree(list);
-      printf("during3\n");fflush(stdout); 
+      //      printf("during3\n");fflush(stdout); 
    }
-  printf("beffore after\n");fflush(stdout);
+  //  printf("beffore after\n");fflush(stdout);
   cnt->deadclient = NULL;
 }
 
@@ -121,17 +121,17 @@ int		check_clients(fd_set *maskr, fd_set *maskw, int *res)
 
 int		check_server(fd_set *maskr, fd_set *maskw, int *res)
 {
-  printf("bifton\n");fflush(stdout);
+  //  printf("bifton\n");fflush(stdout);
   if (cnt->server.sock)
     if (*res > 0 && FD_ISSET(cnt->server.sock->channel, maskr))
       {
-	printf("bifton2\n");fflush(stdout);
+	//	printf("bifton2\n");fflush(stdout);
 	(*res)--;
 	if (new_client(&cnt->newclient))
 	  ;
-	printf("bifton3\n");fflush(stdout);
+	//	printf("bifton3\n");fflush(stdout);
 	return (1);
       }
-  printf("bifton4\n");fflush(stdout);
+  //  printf("bifton4\n");fflush(stdout);
   return (0);
 }

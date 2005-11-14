@@ -4,10 +4,10 @@ SRCS	=	$(NAME).cpp
 OBJS	=	$(SRCS:.cpp=.o)
 
 CFLAGS	=	-Wall -g3\
-		-I../libnettool
+		-I../
 CXXFLAGS=	$(CFLAGS)
 
-LIBS	=	-lSDL_net -L../libnettool/ -lnettool
+LIBS	=	-lSDL_net -L../doomstools/ -lnettool
 
 CC	=	g++
 RM	=	rm -f
