@@ -342,7 +342,7 @@ eTagReturn	tag_remove(char *tag, char *name)
       if (exists)
 	return (tagSuccess);
 
-      sprintf(gl_sql, "delete from tag_name where name='%s';", idname);
+      sprintf(gl_sql, "delete from tag_name where name='%s';", name);
       return (_exec_sql(NULL, NULL));
     }
   return (tagSuccess);
