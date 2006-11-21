@@ -53,7 +53,7 @@ int		xml_init(char *db)
   gl_xml->elm[gl_xml->depth] = doc.FirstChildElement("root");
   if (!gl_xml->elm[gl_xml->depth])
     {
-      fprintf(stderr, "XML avec les pieds\n");
+      fprintf(stderr, "XML mal-formed\n");
       return (1);
     }
   gl_xml->last[gl_xml->depth] = 0;

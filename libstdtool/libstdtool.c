@@ -24,7 +24,7 @@ void		*xmalloc(size_t len)
 
   p = malloc(len);
 #ifdef MALLOCDEBUG
-  printf("MALLOC: %d allouer\n", p);
+  printf("MALLOC: %d malloc'd\n", p);
   fflush(stdout);
 #endif
   if (!p)
@@ -60,7 +60,7 @@ char		*xstrdup(char *s)
     return (0);
   ptr = strdup(s);
 #ifdef MALLOCDEBUG
-  printf("MALLOC: %d allouer\n", ptr);
+  printf("MALLOC: %d malloc'd\n", ptr);
   fflush(stdout);
 #endif
   if (!ptr)
@@ -84,7 +84,7 @@ char		*xstrndup(char *s, size_t len)
   strncpy(ptr, s, len);
   ptr[len] = 0;
 #ifdef MALLOCDEBUG
-  printf("MALLOC: %d allouer\n", ptr);
+  printf("MALLOC: %d malloc'd\n", ptr);
   fflush(stdout);
 #endif
   if (!ptr)
